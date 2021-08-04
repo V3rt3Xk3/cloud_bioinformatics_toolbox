@@ -12,7 +12,14 @@ URL: https://developer.okta.com/blog/2020/06/29/aspnet-core-mongodb
 
 URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-5.0&tabs=visual-studio
 
-## .NET Versions
+## .NET
+
+#### This how I initialized the project:
+
+$dotnet new webapi -n Backend
+
+### .NET Versions
+
 $dotnet --list-sdks
 
 >5.0.302 [/usr/share/dotnet/sdk]
