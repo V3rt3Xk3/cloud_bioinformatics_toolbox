@@ -12,6 +12,10 @@ URL: https://developer.okta.com/blog/2020/06/29/aspnet-core-mongodb
 
 URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-5.0&tabs=visual-studio
 
+## Testing
+
+URL: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-5.0
+
 ## .NET
 
 #### This how I initialized the project:
