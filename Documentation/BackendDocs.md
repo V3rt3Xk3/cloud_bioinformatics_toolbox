@@ -1,8 +1,16 @@
 # Cloud_Bioinformatics_Toolbox Docs
 
-## Tutorial
+## Useful links for the app:
+
+### NaturalDNA Sequences API
+
+* https://localhost:5001/api/naturaldna
+
+## Tutorials
 
 URL: https://developer.okta.com/blog/2020/06/29/aspnet-core-mongodb
+
+URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-5.0&tabs=visual-studio
 
 ## .NET Versions
 $dotnet --list-sdks
