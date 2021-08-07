@@ -13,7 +13,7 @@ namespace Backend.Services
 	{
 		private readonly IMongoCollection<NaturalDNASequence> _naturalDNASequences;
 		private readonly IMongoDatabase database;
-		private string CollectionName { get; };
+		public string CollectionName { get; }
 
 		public NaturalDNAService(ICloudBioinformaticsDatabaseSettings settings)
 		{
