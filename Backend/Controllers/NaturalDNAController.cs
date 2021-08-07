@@ -18,11 +18,19 @@ namespace Backend.Controllers
 			_NatualDNAService = naturalDNAService;
 		}
 
-		[HttpGet]
+		[HttpGet(Name = "GetAll")]
 		public async Task<ActionResult<List<NaturalDNASequence>>> Get()
 		{
 			List<NaturalDNASequence> response = await _NatualDNAService.GetAsync();
 			return response;
+		}
+
+		[HttpPost]
+		public ActionResult InsertOne([FromBody] NaturalDNASequence sequence)
+		{
+			_NatualDNAService.InsertOne(sequence);
+
+			return CreatedAtRoute("GetBook", new { id = sequence.Id.ToString() }, sequence);
 		}
 
 	}

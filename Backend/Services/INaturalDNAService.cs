@@ -13,5 +13,10 @@ namespace Backend.Services
 		#region GetAsync
 		Task<List<NaturalDNASequence>> GetAsync();
 		#endregion
+
+		#region InsertOneAsync
+		// NOTE: The reasoning behind using a Sync not Async is that it is not IO bound but computation bound code. We need the Database to respond before letting the user move forward.
+		void InsertOne(NaturalDNASequence sequence);
+		#endregion
 	}
 }

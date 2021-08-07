@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+
 using Backend.Models;
 using Backend.Services;
 
@@ -39,7 +41,7 @@ namespace Backend
 			);
 
 			services.AddSingleton<NaturalDNAService>();
-			services.AddControllers();
+			services.AddControllers().AddNewtonsoftJson(options => options.UseMemberCasing());
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend", Version = "v1" });
