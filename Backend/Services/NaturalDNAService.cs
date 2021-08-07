@@ -3,9 +3,12 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 
+// Asyncs
+using System.Threading.Tasks;
+
 namespace Backend.Services
 {
-	public class NaturalDNAService
+	public class NaturalDNAService : INaturalDNAService
 	{
 		private readonly IMongoCollection<NaturalDNASequence> _naturalDNASequences;
 
@@ -16,7 +19,11 @@ namespace Backend.Services
 
 			_naturalDNASequences = database.GetCollection<NaturalDNASequence>(settings.NaturalDNASequences_CollectionName);
 		}
-		public List<NaturalDNASequence> Get() =>
-			_naturalDNASequences.Find(NaturalDNASequence => true).ToList();
+		public async Task<List<NaturalDNASequence>> GetAsync()
+		{
+			IAsyncCursor<NaturalDNASequence> requestResults = await _naturalDNASequences.FindAsync(NaturalDNASequence => true);
+			return await requestResults.ToListAsync();
+		}
+
 	}
 }

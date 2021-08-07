@@ -3,6 +3,9 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
+// Asyncs
+using System.Threading.Tasks;
+
 namespace Backend.Controllers
 {
 	[Route("api/[controller]")]
@@ -16,7 +19,11 @@ namespace Backend.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult<List<NaturalDNASequence>> Get() =>
-			_NatualDNAService.Get();
+		public async Task<ActionResult<List<NaturalDNASequence>>> Get()
+		{
+			List<NaturalDNASequence> response = await _NatualDNAService.GetAsync();
+			return response;
+		}
+
 	}
 }
