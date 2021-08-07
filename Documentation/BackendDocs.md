@@ -22,11 +22,15 @@ URL: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=a
 
 $dotnet new webapi -n Backend
 
-#### Installing packages:
+#### Installing packages to Backend:
 
 $dotnet add package MongoDB.Driver\
 $dotnet add package Microsoft.AspNetCore.Authentication.OpenIdConnect\
 $dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson\
+
+#### Installing packages to BackendTests:
+
+$dotnet add package Moq\
 
 ### .NET Versions
 
