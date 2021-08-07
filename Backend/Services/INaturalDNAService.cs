@@ -10,7 +10,7 @@ namespace Backend.Services
 {
 	public interface INaturalDNAService
 	{
-		#region 
+		#region GetAsync
 		Task<List<NaturalDNASequence>> GetAsync();
 		#endregion
 	}
