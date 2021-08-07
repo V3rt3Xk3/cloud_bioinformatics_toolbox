@@ -24,13 +24,24 @@ namespace Backend.Controllers
 			List<NaturalDNASequence> response = await _NatualDNAService.GetAsync();
 			return response;
 		}
+		[HttpGet("{id}", Name = "Natural DNA sequence by ID")]
+		public async Task<ActionResult<NaturalDNASequence>> Get(string id)
+		{
+			NaturalDNASequence sequence = await _NatualDNAService.GetAsync(id);
+
+			if (sequence == null)
+			{
+				return NotFound();
+			}
+			return sequence;
+		}
 
 		[HttpPost]
 		public ActionResult InsertOne([FromBody] NaturalDNASequence sequence)
 		{
 			_NatualDNAService.InsertOne(sequence);
 
-			return CreatedAtRoute("GetBook", new { id = sequence.Id.ToString() }, sequence);
+			return CreatedAtRoute("Natural DNA sequence by ID", new { id = sequence.Id.ToString() }, sequence);
 		}
 
 	}

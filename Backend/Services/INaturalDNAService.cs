@@ -12,6 +12,7 @@ namespace Backend.Services
 	{
 		#region GetAsync
 		Task<List<NaturalDNASequence>> GetAsync();
+		Task<NaturalDNASequence> GetAsync(string id);
 		#endregion
 
 		#region InsertOneAsync

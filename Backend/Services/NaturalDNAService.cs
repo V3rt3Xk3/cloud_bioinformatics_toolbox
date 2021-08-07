@@ -25,6 +25,12 @@ namespace Backend.Services
 			IAsyncCursor<NaturalDNASequence> requestResults = await _naturalDNASequences.FindAsync(NaturalDNASequence => true);
 			return await requestResults.ToListAsync();
 		}
+		public async Task<NaturalDNASequence> GetAsync(string id)
+		{
+			IAsyncCursor<NaturalDNASequence> requestResults = await _naturalDNASequences.FindAsync<NaturalDNASequence>(
+																						sequence => sequence.Id == id);
+			return await requestResults.FirstAsync<NaturalDNASequence>();
+		}
 
 		public void InsertOne(NaturalDNASequence sequence)
 		{

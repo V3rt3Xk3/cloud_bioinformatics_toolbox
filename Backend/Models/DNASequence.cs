@@ -12,7 +12,9 @@ namespace Backend.Models
 
 		[BsonElement("sequenceName")]
 		[JsonProperty("sequenceName")]
-		public string SequenceName { get; set; }
-		public string Sequence { get; set; }
+		public string sequenceName { get; set; }
+		[BsonElement("sequence")]
+		[JsonProperty("sequence")]
+		public string sequence { get; set; }
 	}
 }
