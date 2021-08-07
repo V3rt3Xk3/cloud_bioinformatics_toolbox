@@ -5,8 +5,7 @@
 		}
 	],
 	"settings": {
-		
+		"dotnet-test-explorer.testProjectPath": "*/BackendTests.csproj",
+		"omnisharp.defaultLaunchSolution": "./BackendSource.sln"
 	}
-
-
 }
