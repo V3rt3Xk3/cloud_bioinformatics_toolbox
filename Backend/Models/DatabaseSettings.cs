@@ -1,5 +1,3 @@
-using System.Web;
-
 namespace Backend.Models
 {
 	public class CloudBioinformaticsDatabaseSettings : ICloudBioinformaticsDatabaseSettings
