@@ -41,9 +41,9 @@ $mongosh --authenticationDatabase "cloud_bioinformatics" -u "cloud_bioinformaitc
 * Mongosh: 1.0.1
 
 ### Mongo DevURI
-const DB_USER: string = "cloud_bioinformaitcs_mongo_dev";
-const DB_PASS: string = encodeURIComponent("#33FalleN666#");
-const mongo_URI: string = "mongodb://" + DB_USER + ":" + DB_PASS + "@localhost:27017/?authSource=cloud_bioinformatics";
+const DB_USER: string = "cloud_bioinformaitcs_mongo_dev";\
+const DB_PASS: string = encodeURIComponent("#33FalleN666#");\
+const mongo_URI: string = "mongodb://" + DB_USER + ":" + DB_PASS + "@localhost:27017/?authSource=cloud_bioinformatics";\
 
 ### MongoDB Users
 #### MongoDB Admin
