@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace Backend.Models
 {
 	public class CloudBioinformaticsDatabaseSettings : ICloudBioinformaticsDatabaseSettings
