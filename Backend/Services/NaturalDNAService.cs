@@ -12,13 +12,16 @@ namespace Backend.Services
 	public class NaturalDNAService : INaturalDNAService
 	{
 		private readonly IMongoCollection<NaturalDNASequence> _naturalDNASequences;
+		private readonly IMongoDatabase database;
+		private string CollectionName { get; };
 
 		public NaturalDNAService(ICloudBioinformaticsDatabaseSettings settings)
 		{
 			MongoClient client = new MongoClient(settings.ConnectionString);
-			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
+			this.database = client.GetDatabase(settings.DatabaseName);
+			this.CollectionName = settings.NaturalDNASequences_CollectionName;
 
-			_naturalDNASequences = database.GetCollection<NaturalDNASequence>(settings.NaturalDNASequences_CollectionName);
+			_naturalDNASequences = database.GetCollection<NaturalDNASequence>(this.CollectionName);
 		}
 		public async Task<List<NaturalDNASequence>> GetAsync()
 		{
