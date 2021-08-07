@@ -31,6 +31,7 @@ $dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson\
 #### Installing packages to BackendTests:
 
 $dotnet add package Moq\
+$dotnet add package Microsoft.AspNetCore.Mvc.Testing\
 
 ### .NET Versions
 
@@ -70,3 +71,9 @@ const mongo_URI: string = "mongodb://" + DB_USER + ":" + DB_PASS + "@localhost:2
 * User= "cloud_bioinformaitcs_mongo_dev"
 * Pass= "#33FalleN666#"
 * Database= "cloud_bioinformatics"
+
+#### MongoDB readWrite _ TestingDB
+* User= "cloud_bioinformaitcs_mongo_dev"
+* Pass= "#33FalleN666#"
+* Database= "cloud_bioinformatics_test"
+* role: DBOwner
