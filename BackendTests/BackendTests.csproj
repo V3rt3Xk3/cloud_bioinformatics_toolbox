@@ -28,4 +28,12 @@
     <ProjectReference Include="../Backend/Backend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ContentWithTargetPath 
+       Include="./Utilities/DataFiles/**"
+       CopyToOutputDirectory="PreserveNewest"
+       TargetPath="Utilities/DataFiles/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+
 </Project>
