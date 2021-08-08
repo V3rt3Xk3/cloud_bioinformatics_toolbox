@@ -1,0 +1,14 @@
+[
+	{
+		"sequenceName": "Test 1",
+		"sequence": "AGCTAGCGAGCTAGCTAGCGAT"
+	},
+	{
+		"sequenceName": "Test 2",
+		"sequence": "AGCTCTAGCTAGCGAT"
+	},
+	{
+		"sequenceName": "Test 3",
+		"sequence": "AGCTAGCGAGCTAGCTAGCGAT"
+	}
+]
