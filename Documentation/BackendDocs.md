@@ -32,6 +32,7 @@ $dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson\
 
 $dotnet add package Moq\
 $dotnet add package Microsoft.AspNetCore.Mvc.Testing\
+$dotnet add package Xunit.Extensions.Ordering\
 
 ### .NET Versions
 
