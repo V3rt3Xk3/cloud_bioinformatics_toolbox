@@ -11,6 +11,8 @@ using MongoDB.Driver;
 
 using Backend.Models;
 
+using BackendTests.Utilities;
+
 namespace BackendTests
 {
 	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, IDisposable

@@ -9,7 +9,7 @@ using Backend.Models;
 using Backend.Services;
 using Backend.Controllers;
 
-namespace BackendTests
+namespace BackendTests.Utilities
 {
 	public class CustomWebApplicationFactory<TStartup>
 	: WebApplicationFactory<TStartup> where TStartup : class
