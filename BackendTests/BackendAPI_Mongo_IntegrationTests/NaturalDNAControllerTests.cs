@@ -67,7 +67,7 @@ namespace BackendTests
 			JObject jsonResponse = JObject.Parse(responseString);
 
 			string errorMessage = "The inserted Sequence document had a different \"sequenceName\" than \"Test 1\"";
-			AssertX.Equal("Test 1", jsonResponse["sequenceName"], errorMessage);
+			AssertX.Equal("Sus scrofa breed Landrace oxytocin gene", jsonResponse["sequenceName"], errorMessage);
 		}
 		[Fact, Order(3)]
 		public async Task CheckingFor_MultipleInsertingOne()
