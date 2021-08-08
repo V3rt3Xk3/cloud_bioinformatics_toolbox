@@ -2,8 +2,6 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json.Linq;
 
 using Xunit;
@@ -11,10 +9,7 @@ using Xunit.Extensions.Ordering;
 using Newtonsoft.Json;
 using MongoDB.Driver;
 
-using Backend;
 using Backend.Models;
-using Backend.Services;
-using Backend.Controllers;
 
 namespace BackendTests
 {
