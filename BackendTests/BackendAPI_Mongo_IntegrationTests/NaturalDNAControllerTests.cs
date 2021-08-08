@@ -35,7 +35,7 @@ namespace BackendTests
 
 		[Theory, Order(1)]
 		[InlineData("/api/naturalDNA")]
-		public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
+		public async Task CheckingForEndpoint_StatusCodes_ContentType(string url)
 		{
 			// Arrange
 			System.Net.Http.HttpClient client = _factory.CreateClient();
@@ -50,15 +50,12 @@ namespace BackendTests
 		}
 
 		[Fact, Order(2)]
-		public async Task NaturalDNA_InsertOne()
+		public async Task CheckingFor_InsertingOne_ReceivingTheInput()
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
 
-			NaturalDNASequence sequence2POST = new NaturalDNASequence();
-			sequence2POST.sequenceName = "NaturalDNA POST_01";
-			sequence2POST.sequence = "AGATCGATCGGCGAGCTA";
-			string json2POST = JsonConvert.SerializeObject(sequence2POST);
+			string json2POST = NaturalDNA_TestUtilities.LoadTestData_SingleEntity();
 			StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
 
 			// Act
@@ -68,20 +65,24 @@ namespace BackendTests
 			response.EnsureSuccessStatusCode(); // Status code 200-299
 			string responseString = response.Content.ReadAsStringAsync().Result;
 			JObject jsonResponse = JObject.Parse(responseString);
-			Assert.Equal(jsonResponse["sequenceName"], "NaturalDNA POST_01");
+
+			string errorMessage = "The inserted Sequence document had a different \"sequenceName\" than \"Test 1\"";
+			AssertX.Equal("Test 1", jsonResponse["sequenceName"], errorMessage);
 		}
 		[Fact, Order(3)]
-		public async Task NaturalDNAGet_ShouldReturn_1_Length()
+		public async Task CheckingFor_MultipleInsertingOne()
 		{
 			// Arrange
 			System.Net.Http.HttpClient client = _factory.CreateClient();
 
-			NaturalDNASequence sequence2POST = new NaturalDNASequence();
-			sequence2POST.sequenceName = "NaturalDNA POST_01";
-			sequence2POST.sequence = "AGATCGATCGGCGAGCTA";
-			string json2POST = JsonConvert.SerializeObject(sequence2POST);
-			StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
-			await client.PostAsync("/api/naturalDNA", jsonContent);
+			// I happend to know that the TC JSON has only 3 entries.
+			for (int i = 0; i < 3; i++)
+			{
+				string json2POST = NaturalDNA_TestUtilities.LoadTestData_SingleEntity(i);
+				StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
+				await client.PostAsync("/api/naturalDNA", jsonContent);
+			}
+
 
 			// Act
 			HttpResponseMessage response = await client.GetAsync("/api/naturalDNA");
@@ -91,7 +92,7 @@ namespace BackendTests
 			// Assert
 			response.EnsureSuccessStatusCode(); // Status code 200-299
 			Console.WriteLine(responseString);
-			Assert.Equal(1, jsonArray.Count);
+			Assert.Equal(3, jsonArray.Count);
 		}
 	}
 }
