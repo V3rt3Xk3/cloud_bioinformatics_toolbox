@@ -1,9 +1,14 @@
+using System;
+using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json.Linq;
 
 using Xunit;
+using Newtonsoft.Json;
+using MongoDB.Driver;
 
 using Backend;
 using Backend.Models;
@@ -12,12 +17,21 @@ using Backend.Controllers;
 
 namespace BackendTests
 {
-	public class NaturalDNAControllerTests : IClassFixture<WebApplicationFactory<Backend.Startup>>
+	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, IDisposable
 	{
-		private readonly WebApplicationFactory<Backend.Startup> _factory;
-		public NaturalDNAControllerTests(WebApplicationFactory<Backend.Startup> factory)
+		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
+		public NaturalDNAControllerTests(CustomWebApplicationFactory<Backend.Startup> factory)
 		{
 			_factory = factory;
+		}
+
+		public void Dispose()
+		{
+			string connectionString = "mongodb://cloud_bioinformaitcs_mongo_dev:%2333FalleN666%23@localhost:27017/?authSource=cloud_bioinformatics_test";
+			MongoClient client = new MongoClient(connectionString);
+
+			string DatabaseNamespace = "cloud_bioinformatics_test";
+			client.DropDatabase(DatabaseNamespace);
 		}
 
 		[Theory]
@@ -35,20 +49,50 @@ namespace BackendTests
 			Assert.Equal("application/json; charset=utf-8",
 							response.Content.Headers.ContentType.ToString());
 		}
+
 		[Fact]
-		public async Task NaturalDNAGet_ShouldReturn_0_Length()
+		public async Task NaturalDNA_InsertOne()
+		{
+			// Arrange
+			HttpClient client = _factory.CreateClient();
+
+			NaturalDNASequence sequence2POST = new NaturalDNASequence();
+			sequence2POST.sequenceName = "NaturalDNA POST_01";
+			sequence2POST.sequence = "AGATCGATCGGCGAGCTA";
+			string json2POST = JsonConvert.SerializeObject(sequence2POST);
+			StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
+
+			// Act
+			HttpResponseMessage response = await client.PostAsync("/api/naturalDNA", jsonContent);
+
+			// Assert
+			response.EnsureSuccessStatusCode(); // Status code 200-299
+			string responseString = response.Content.ReadAsStringAsync().Result;
+			JObject jsonResponse = JObject.Parse(responseString);
+			Assert.Equal(jsonResponse["sequenceName"], "NaturalDNA POST_01");
+		}
+		[Fact]
+		public async Task NaturalDNAGet_ShouldReturn_1_Length()
 		{
 			// Arrange
 			System.Net.Http.HttpClient client = _factory.CreateClient();
 
+			NaturalDNASequence sequence2POST = new NaturalDNASequence();
+			sequence2POST.sequenceName = "NaturalDNA POST_01";
+			sequence2POST.sequence = "AGATCGATCGGCGAGCTA";
+			string json2POST = JsonConvert.SerializeObject(sequence2POST);
+			StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
+			await client.PostAsync("/api/naturalDNA", jsonContent);
+
 			// Act
-			System.Net.Http.HttpResponseMessage response = await client.GetAsync("/api/naturalDNA");
-			var responseString = response.Content.ReadAsStringAsync().Result;
+			HttpResponseMessage response = await client.GetAsync("/api/naturalDNA");
+			string responseString = response.Content.ReadAsStringAsync().Result;
 			JArray jsonArray = JArray.Parse(responseString);
 
 			// Assert
 			response.EnsureSuccessStatusCode(); // Status code 200-299
-			Assert.Equal(5, jsonArray.Count);
+			Console.WriteLine(responseString);
+			Assert.Equal(1, jsonArray.Count);
 		}
 	}
 }
