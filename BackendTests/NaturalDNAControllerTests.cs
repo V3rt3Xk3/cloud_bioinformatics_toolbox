@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json.Linq;
 
 using Xunit;
+using Xunit.Extensions.Ordering;
 using Newtonsoft.Json;
 using MongoDB.Driver;
 
@@ -25,6 +26,7 @@ namespace BackendTests
 			_factory = factory;
 		}
 
+		// NOTE: This code runs after each test.
 		public void Dispose()
 		{
 			string connectionString = "mongodb://cloud_bioinformaitcs_mongo_dev:%2333FalleN666%23@localhost:27017/?authSource=cloud_bioinformatics_test";
@@ -34,7 +36,7 @@ namespace BackendTests
 			client.DropDatabase(DatabaseNamespace);
 		}
 
-		[Theory]
+		[Theory, Order(1)]
 		[InlineData("/api/naturalDNA")]
 		public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
 		{
@@ -50,7 +52,7 @@ namespace BackendTests
 							response.Content.Headers.ContentType.ToString());
 		}
 
-		[Fact]
+		[Fact, Order(2)]
 		public async Task NaturalDNA_InsertOne()
 		{
 			// Arrange
@@ -71,7 +73,7 @@ namespace BackendTests
 			JObject jsonResponse = JObject.Parse(responseString);
 			Assert.Equal(jsonResponse["sequenceName"], "NaturalDNA POST_01");
 		}
-		[Fact]
+		[Fact, Order(3)]
 		public async Task NaturalDNAGet_ShouldReturn_1_Length()
 		{
 			// Arrange
