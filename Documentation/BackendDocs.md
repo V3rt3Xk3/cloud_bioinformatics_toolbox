@@ -4,20 +4,20 @@
 
 ### NaturalDNA Sequences API
 
-* https://localhost:5001/api/naturaldna\
+* https://localhost:5001/api/naturaldna \
 
 ## Tutorials
 
-URL: https://developer.okta.com/blog/2020/06/29/aspnet-core-mongodb\
-URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-5.0&tabs=visual-studio\
+URL: https://developer.okta.com/blog/2020/06/29/aspnet-core-mongodb \
+URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-5.0&tabs=visual-studio \
 
 ## Testing
 
-URL: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-5.0\
+URL: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-5.0 \
 
 ### XUnit and Ordering
 
-URL: https://github.com/tomaszeman/Xunit.Extensions.Ordering\
+URL: https://github.com/tomaszeman/Xunit.Extensions.Ordering \
 
 ## .NET
 
