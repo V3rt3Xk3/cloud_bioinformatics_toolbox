@@ -45,8 +45,10 @@ namespace BackendTests
 
 			// Assert
 			response.EnsureSuccessStatusCode(); // Status code 200-299
-			Assert.Equal("application/json; charset=utf-8",
-							response.Content.Headers.ContentType.ToString());
+			string errorMessage = "The repsonse content is not: 'application/json; charset=utf-8'";
+			AssertX.Equal("application/json; charset=utf-8",
+							response.Content.Headers.ContentType.ToString(),
+							errorMessage);
 		}
 
 		[Fact, Order(2)]
@@ -91,8 +93,8 @@ namespace BackendTests
 
 			// Assert
 			response.EnsureSuccessStatusCode(); // Status code 200-299
-			Console.WriteLine(responseString);
-			Assert.Equal(3, jsonArray.Count);
+			string errorMessage = "There are a different number of entries in the DB than 3!";
+			AssertX.Equal(3, jsonArray.Count, errorMessage);
 		}
 	}
 }
