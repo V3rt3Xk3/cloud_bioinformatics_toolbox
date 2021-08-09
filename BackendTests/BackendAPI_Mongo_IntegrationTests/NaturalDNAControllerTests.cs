@@ -15,22 +15,13 @@ using BackendTests.Utilities;
 
 namespace BackendTests
 {
-	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, IDisposable
+	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, ITestSuite
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		public NaturalDNAControllerTests(CustomWebApplicationFactory<Backend.Startup> factory)
 		{
 			_factory = factory;
-		}
-
-		// NOTE: This code runs after each test.
-		public void Dispose()
-		{
-			string connectionString = "mongodb://cloud_bioinformaitcs_mongo_dev:%2333FalleN666%23@localhost:27017/?authSource=cloud_bioinformatics_test";
-			MongoClient client = new MongoClient(connectionString);
-
-			string DatabaseNamespace = "cloud_bioinformatics_test";
-			client.DropDatabase(DatabaseNamespace);
+			ITestSuite.MongoDBCleanUp();
 		}
 
 		[Theory, Order(1)]
@@ -70,6 +61,8 @@ namespace BackendTests
 
 			string errorMessage = "The inserted Sequence document had a different \"sequenceName\" than \"Test 1\"";
 			AssertX.Equal("Sus scrofa breed Landrace oxytocin gene", jsonResponse["sequenceName"], errorMessage);
+
+			ITestSuite.TestCase_DatabaseCleanUp();
 		}
 		[Fact, Order(3)]
 		public async Task CheckingFor_MultipleInsertingOne()
@@ -95,6 +88,8 @@ namespace BackendTests
 			response.EnsureSuccessStatusCode(); // Status code 200-299
 			string errorMessage = "There are a different number of entries in the DB than 3!";
 			AssertX.Equal(3, jsonArray.Count, errorMessage);
+
+			ITestSuite.TestCase_DatabaseCleanUp();
 		}
 	}
 }
