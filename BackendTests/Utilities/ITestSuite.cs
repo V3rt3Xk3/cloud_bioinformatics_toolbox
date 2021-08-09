@@ -1,10 +1,14 @@
 using System;
+using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace BackendTests.Utilities
 {
 	public interface ITestSuite
 	{
+
+		Task TestSuiteSetUp();
+
 		/// <summary>
 		/// Cleans up the MongoDB "cloud_bioinformatics_test" test database. | Drops it.
 		/// </summary>

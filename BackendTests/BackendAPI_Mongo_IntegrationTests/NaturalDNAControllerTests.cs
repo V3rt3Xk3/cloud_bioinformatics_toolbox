@@ -21,10 +21,28 @@ namespace BackendTests
 		public NaturalDNAControllerTests(CustomWebApplicationFactory<Backend.Startup> factory)
 		{
 			_factory = factory;
-			ITestSuite.MongoDBCleanUp();
 		}
 
-		[Theory, Order(1)]
+		[Fact, Order(1)]
+		public async Task TestSuiteSetUp()
+		{
+			ITestSuite.MongoDBCleanUp();
+
+			// Arrange
+			System.Net.Http.HttpClient client = _factory.CreateClient();
+
+			// Act
+			HttpResponseMessage response = await client.GetAsync("/api/naturalDNA");
+			string responseString = response.Content.ReadAsStringAsync().Result;
+			JArray jsonArray = JArray.Parse(responseString);
+
+			// Assert
+			response.EnsureSuccessStatusCode(); // Status code 200-299
+			string errorMessage = "There are some entries in the DB - \"NaturalDNASequences\" collection.";
+			AssertX.Equal(0, jsonArray.Count, errorMessage);
+		}
+
+		[Theory, Order(2)]
 		[InlineData("/api/naturalDNA")]
 		public async Task CheckingForEndpoint_StatusCodes_ContentType(string url)
 		{
@@ -42,7 +60,7 @@ namespace BackendTests
 							errorMessage);
 		}
 
-		[Fact, Order(2)]
+		[Fact, Order(3)]
 		public async Task CheckingFor_InsertingOne_ReceivingTheInput()
 		{
 			// Arrange
@@ -64,7 +82,7 @@ namespace BackendTests
 
 			ITestSuite.TestCase_DatabaseCleanUp();
 		}
-		[Fact, Order(3)]
+		[Fact, Order(4)]
 		public async Task CheckingFor_MultipleInsertingOne()
 		{
 			// Arrange
