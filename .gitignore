@@ -6,15 +6,16 @@
 _Frontend/node_modules
 
 # testing
-/coverage
+_Frontend/coverage
 
 # production
-/build
+_Frontend/build
 
 # misc
 .DS_Store
 .env
 npm-debug.log
+package-lock.json
 
 
 
