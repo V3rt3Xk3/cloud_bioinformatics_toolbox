@@ -1,0 +1,10 @@
+{
+	"fileOptions": {
+		"userExcludeSearchPatterns": [
+			"_Documentation",
+			"frontend",
+			".vscode",
+			".git"
+		]
+	}
+}
