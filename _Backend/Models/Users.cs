@@ -12,7 +12,7 @@ namespace Backend.Models
 
 		[BsonElement("userName")]
 		[JsonProperty("userName")]
-		public string UserName { get; set; }
+		public string Username { get; set; }
 
 
 		[JsonIgnore]
