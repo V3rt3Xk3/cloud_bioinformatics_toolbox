@@ -16,8 +16,8 @@ namespace Backend.Controllers
 	[ApiController]
 	public class NaturalDNAController : ControllerBase
 	{
-		private readonly NaturalDNAService _NatualDNAService;
-		public NaturalDNAController(NaturalDNAService naturalDNAService)
+		private readonly INaturalDNAService _NatualDNAService;
+		public NaturalDNAController(INaturalDNAService naturalDNAService)
 		{
 			_NatualDNAService = naturalDNAService;
 		}

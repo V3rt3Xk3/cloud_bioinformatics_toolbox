@@ -14,7 +14,7 @@ namespace Backend.Authorization
 	public interface IJWTUtils
 	{
 		public string GenerateToken(UserEntity user);
-		public int? ValidateToken(string token);
+		public string ValidateToken(string token);
 	}
 
 	public class JWTUtils : IJWTUtils
@@ -35,14 +35,14 @@ namespace Backend.Authorization
 				Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
 				Expires = DateTime.UtcNow.AddDays(7),
 				// BUG: I would like this to go Assymetric at somepoint
-				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.EcdsaSha512Signature)
+				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
 			};
 			SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
 			return tokenHandler.WriteToken(token);
 		}
 
-		public int? ValidateToken(string token)
+		public string ValidateToken(string token)
 		{
 			// Returning a null if the token does not exist.
 			if (token == null) return null;
@@ -52,6 +52,8 @@ namespace Backend.Authorization
 			byte[] key = Encoding.ASCII.GetBytes(_appSettings.Secret);
 
 			// Validating the token
+			// BUG: Maybe this can be rewritten without try-catch
+			// FIXME: Check whether we need to access the user or troubleshoot it, or hash is just magic?
 			try
 			{
 				tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -66,7 +68,7 @@ namespace Backend.Authorization
 				}, out SecurityToken validatedToken);
 
 				JwtSecurityToken JWTToken = (JwtSecurityToken)validatedToken;
-				int userId = int.Parse(JWTToken.Claims.First(hiddenInt => hiddenInt.Type == "id").Value);
+				string userId = JWTToken.Claims.First(hiddenId => hiddenId.Type == "Id").Value;
 
 				// Returning the userID if validation was successful
 				return userId;

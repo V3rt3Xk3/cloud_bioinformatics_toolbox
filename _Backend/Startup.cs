@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Backend.Models;
 using Backend.Services;
 using Backend.Helpers;
+using Backend.Authorization;
 
 namespace Backend
 {
@@ -40,13 +41,21 @@ namespace Backend
 			services.AddSingleton<ICloudBioinformaticsDatabaseSettings>(sp =>
 				sp.GetRequiredService<IOptions<CloudBioinformaticsDatabaseSettings>>().Value
 			);
-
 			// NOTE: Configuring the AppSettings
 			services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
+			// NOTE: Mappers
+			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
+			// NOTE: Controllers
+			services.AddControllers();
 
 			// NOTE: These will be the controller services
-			services.AddSingleton<NaturalDNAService>();
+			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<INaturalDNAService, NaturalDNAService>();
+			// NOTE: JWT Utils
+			services.AddScoped<IJWTUtils, JWTUtils>();
 
 
 			services.AddControllers().AddNewtonsoftJson(options => options.UseMemberCasing());
@@ -70,7 +79,9 @@ namespace Backend
 
 			app.UseRouting();
 
-			app.UseAuthorization();
+			// // WOW: Turning off the Microsoft Auth middleware -> To add the one we implemented
+			// app.UseAuthorization();
+			app.UseMiddleware<JWTMiddleware>();
 
 			app.UseEndpoints(endpoints =>
 			{

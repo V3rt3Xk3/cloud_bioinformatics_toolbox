@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,9 +21,16 @@ namespace Backend.Authorization
 			this._appSettings = appSettings.Value;
 		}
 
-		public async Task Invoke(HttpContext context, IUserService userService, IJWTUtils jWTUtils)
+		public async Task Invoke(HttpContext context, IUserService userService, IJWTUtils jwtUtils)
 		{
-
+			string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(' ').Last();
+			string userId = jwtUtils.ValidateToken(token);
+			if (userId != null)
+			{
+				context.Items["User"] = await userService.GetAsyncById(userId);
+			}
+			await _next(context);
+			return;
 		}
 	}
 }
