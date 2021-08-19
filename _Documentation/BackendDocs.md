@@ -13,6 +13,10 @@
 URL: https://developer.okta.com/blog/2020/06/29/aspnet-core-mongodb \
 URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-5.0&tabs=visual-studio \
 
+### User Authentication Tutorial
+
+URL: https://jasonwatmore.com/post/2021/05/25/net-5-simple-api-for-authentication-registration-and-user-management \
+
 ## Testing
 
 URL: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-5.0 \
