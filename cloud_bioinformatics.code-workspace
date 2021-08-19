@@ -8,7 +8,7 @@
 		"dotnet-test-explorer.testProjectPath": "*/BackendTests.csproj",
 		"omnisharp.defaultLaunchSolution": "./BackendSource.sln",
 		"files.exclude": {
-			"**/_Frontend/node_modules/**/*": true
+			"**/frontend/node_modules/**/*": true
 		}
 	}
 }

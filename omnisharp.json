@@ -1,10 +1,11 @@
 {
 	"fileOptions": {
-		"userExcludeSearchPatterns": [
-			"_Documentation",
-			"frontend",
-			".vscode",
-			".git"
+		"excludeSearchPatterns": [
+			"**/_Documentation/**/*",
+			"**/node_modules/**/*",
+			"**/build/**/*",
+			"**/.vscode/**/*",
+			"**/.git/**/*"
 		]
 	}
 }
