@@ -32,7 +32,7 @@ namespace Backend.Services
 		{
 			IAsyncCursor<NaturalDNASequenceEntity> requestResults = await _naturalDNASequences.FindAsync<NaturalDNASequenceEntity>(
 																						sequence => sequence.Id == id);
-			return await requestResults.FirstAsync<NaturalDNASequenceEntity>();
+			return await requestResults.FirstOrDefaultAsync<NaturalDNASequenceEntity>();
 		}
 
 		public void InsertOne(NaturalDNASequenceEntity sequence)

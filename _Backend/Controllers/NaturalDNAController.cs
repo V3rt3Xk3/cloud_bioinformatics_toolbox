@@ -4,6 +4,7 @@ using Backend.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using MongoDB.Bson;
 
 // Asyncs
 using System.Threading.Tasks;
@@ -29,13 +30,20 @@ namespace Backend.Controllers
 		[HttpGet("{id}", Name = "Natural DNA sequence by ID")]
 		public async Task<ActionResult<NaturalDNASequenceEntity>> Get(string id)
 		{
-			NaturalDNASequenceEntity sequence = await _NatualDNAService.GetAsync(id);
+			bool testParse = ObjectId.TryParse(id, out ObjectId outId);
 
-			if (sequence == null)
+
+			if (testParse != true)
 			{
 				return NotFound();
 			}
-			return sequence;
+			else
+			{
+				NaturalDNASequenceEntity sequence = await _NatualDNAService.GetAsyncById(id);
+				if (sequence == null) return NotFound();
+
+				return sequence;
+			}
 		}
 
 		[HttpPost]
