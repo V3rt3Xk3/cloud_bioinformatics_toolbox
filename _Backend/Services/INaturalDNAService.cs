@@ -12,7 +12,7 @@ namespace Backend.Services
 	{
 		string CollectionName { get; }
 		Task<List<NaturalDNASequenceEntity>> GetAsync();
-		Task<NaturalDNASequenceEntity> GetAsync(string id);
+		Task<NaturalDNASequenceEntity> GetAsyncById(string id);
 		// NOTE: The reasoning behind using a Sync not Async is that it is not IO bound but computation bound code. We need the Database to respond before letting the user move forward.
 		void InsertOne(NaturalDNASequenceEntity sequence);
 	}

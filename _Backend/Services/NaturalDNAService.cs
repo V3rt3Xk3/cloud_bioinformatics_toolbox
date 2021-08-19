@@ -28,7 +28,7 @@ namespace Backend.Services
 			IAsyncCursor<NaturalDNASequenceEntity> requestResults = await _naturalDNASequences.FindAsync(NaturalDNASequence => true);
 			return await requestResults.ToListAsync();
 		}
-		public async Task<NaturalDNASequenceEntity> GetAsync(string id)
+		public async Task<NaturalDNASequenceEntity> GetAsyncById(string id)
 		{
 			IAsyncCursor<NaturalDNASequenceEntity> requestResults = await _naturalDNASequences.FindAsync<NaturalDNASequenceEntity>(
 																						sequence => sequence.Id == id);
