@@ -12,9 +12,9 @@ namespace Backend.Models
 
 		[BsonElement("userName")]
 		[JsonProperty("userName")]
-		public string userName { get; set; }
+		public string UserName { get; set; }
 		[BsonElement("passwordHashed")]
 		[JsonProperty("passwordHashed")]
-		public string passwordHashed { get; set; }
+		public string PasswordHashed { get; set; }
 	}
 }
