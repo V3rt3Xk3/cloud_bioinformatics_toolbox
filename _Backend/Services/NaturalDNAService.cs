@@ -11,7 +11,7 @@ namespace Backend.Services
 {
 	public class NaturalDNAService : INaturalDNAService
 	{
-		private readonly IMongoCollection<NaturalDNASequence> _naturalDNASequences;
+		private readonly IMongoCollection<NaturalDNASequenceEntity> _naturalDNASequences;
 		private readonly IMongoDatabase database;
 		public string CollectionName { get; }
 
@@ -21,21 +21,21 @@ namespace Backend.Services
 			this.database = client.GetDatabase(settings.DatabaseName);
 			this.CollectionName = settings.NaturalDNASequences_CollectionName;
 
-			_naturalDNASequences = database.GetCollection<NaturalDNASequence>(this.CollectionName);
+			_naturalDNASequences = database.GetCollection<NaturalDNASequenceEntity>(this.CollectionName);
 		}
-		public async Task<List<NaturalDNASequence>> GetAsync()
+		public async Task<List<NaturalDNASequenceEntity>> GetAsync()
 		{
-			IAsyncCursor<NaturalDNASequence> requestResults = await _naturalDNASequences.FindAsync(NaturalDNASequence => true);
+			IAsyncCursor<NaturalDNASequenceEntity> requestResults = await _naturalDNASequences.FindAsync(NaturalDNASequence => true);
 			return await requestResults.ToListAsync();
 		}
-		public async Task<NaturalDNASequence> GetAsync(string id)
+		public async Task<NaturalDNASequenceEntity> GetAsync(string id)
 		{
-			IAsyncCursor<NaturalDNASequence> requestResults = await _naturalDNASequences.FindAsync<NaturalDNASequence>(
+			IAsyncCursor<NaturalDNASequenceEntity> requestResults = await _naturalDNASequences.FindAsync<NaturalDNASequenceEntity>(
 																						sequence => sequence.Id == id);
-			return await requestResults.FirstAsync<NaturalDNASequence>();
+			return await requestResults.FirstAsync<NaturalDNASequenceEntity>();
 		}
 
-		public void InsertOne(NaturalDNASequence sequence)
+		public void InsertOne(NaturalDNASequenceEntity sequence)
 		{
 			if (sequence == null)
 			{

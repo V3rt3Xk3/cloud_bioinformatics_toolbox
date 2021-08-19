@@ -19,15 +19,15 @@ namespace Backend.Controllers
 		}
 
 		[HttpGet(Name = "GetAll")]
-		public async Task<ActionResult<List<NaturalDNASequence>>> Get()
+		public async Task<ActionResult<List<NaturalDNASequenceEntity>>> Get()
 		{
-			List<NaturalDNASequence> response = await _NatualDNAService.GetAsync();
+			List<NaturalDNASequenceEntity> response = await _NatualDNAService.GetAsync();
 			return response;
 		}
 		[HttpGet("{id}", Name = "Natural DNA sequence by ID")]
-		public async Task<ActionResult<NaturalDNASequence>> Get(string id)
+		public async Task<ActionResult<NaturalDNASequenceEntity>> Get(string id)
 		{
-			NaturalDNASequence sequence = await _NatualDNAService.GetAsync(id);
+			NaturalDNASequenceEntity sequence = await _NatualDNAService.GetAsync(id);
 
 			if (sequence == null)
 			{
@@ -37,7 +37,7 @@ namespace Backend.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult InsertOne([FromBody] NaturalDNASequence sequence)
+		public ActionResult InsertOne([FromBody] NaturalDNASequenceEntity sequence)
 		{
 			_NatualDNAService.InsertOne(sequence);
 

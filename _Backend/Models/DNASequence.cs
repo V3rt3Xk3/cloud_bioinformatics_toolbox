@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Backend.Models
 {
-	public class NaturalDNASequence
+	public class NaturalDNASequenceEntity
 	{
 		[BsonId]
 		[BsonRepresentation(BsonType.ObjectId)]
