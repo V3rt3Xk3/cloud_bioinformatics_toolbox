@@ -68,7 +68,7 @@ namespace Backend.Authorization
 				}, out SecurityToken validatedToken);
 
 				JwtSecurityToken JWTToken = (JwtSecurityToken)validatedToken;
-				string userId = JWTToken.Claims.First(hiddenId => hiddenId.Type == "Id").Value;
+				string userId = JWTToken.Claims.First(hiddenId => hiddenId.Type == "id").Value;
 
 				// Returning the userID if validation was successful
 				return userId;
