@@ -1,5 +1,7 @@
 using Backend.Models;
 using Backend.Services;
+using Backend.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 

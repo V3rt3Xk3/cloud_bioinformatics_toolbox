@@ -13,8 +13,9 @@ namespace Backend.Models
 		[BsonElement("userName")]
 		[JsonProperty("userName")]
 		public string UserName { get; set; }
-		[BsonElement("passwordHashed")]
-		[JsonProperty("passwordHashed")]
+
+
+		[JsonIgnore]
 		public string PasswordHashed { get; set; }
 	}
 }

@@ -41,6 +41,8 @@ namespace Backend
 			);
 
 			services.AddSingleton<NaturalDNAService>();
+
+
 			services.AddControllers().AddNewtonsoftJson(options => options.UseMemberCasing());
 			services.AddSwaggerGen(c =>
 			{
