@@ -17,6 +17,16 @@ URL: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view
 
 URL: https://jasonwatmore.com/post/2021/05/25/net-5-simple-api-for-authentication-registration-and-user-management \
 
+#### JSON
+
+Username: "vertex" \
+Password: "#33FalleN666#" \
+RePassword: "#33FalleN666#" \
+\
+
+Temp Token: "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMWVkNzE2MjE2MWE0ZGFlMmRmY2RjOCIsIm5iZiI6MTYyOTQxMTc0NCwiZXhwIjoxNjMwMDE2NTQ0LCJpYXQiOjE2Mjk0MTE3NDR9.yAQWRPnYHgV0FLZ9qT7SH_X3KGWEcI-A06TPJGkdrKLLj9-_exjUi8vG48psbaI9H_ZoG7E_da_Tn2m1jXbmtA"
+
+
 ## Testing
 
 URL: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-5.0 \
