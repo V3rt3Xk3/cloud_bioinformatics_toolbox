@@ -8,6 +8,7 @@ import {
 
 import Home from "./Pages/Home";
 import UserProfile from "./Pages/UserProfile"
+import UserRegistration from "./Pages/UserRegistration"
 
 // Misc
 import logo from './logo.svg';
@@ -61,13 +62,19 @@ class App extends React.Component<IAppProperties, IAppState> {
 								<Link to="/">Home</Link>
 							</li>
 							<li>
-								<Link to="/user-profile/">User profile</Link>
+								<Link to="/user/profile/">User profile</Link>
+							</li>
+							<li>
+								<Link to="/user/registration/">User registration</Link>
 							</li>
 						</ul>
 					</nav>
 					<Switch>
-						<Route path="/user-profile/">
+						<Route path="/user/profile/">
 							<UserProfile />
+						</Route>
+						<Route path="/user/registration/">
+							<UserRegistration />
 						</Route>
 						<Route path="/">
 							<Home />
