@@ -7,6 +7,7 @@
 	"settings": {
 		"dotnet-test-explorer.testProjectPath": "*/BackendTests.csproj",
 		"omnisharp.defaultLaunchSolution": "./BackendSource.sln",
+		"omnisharp.enableRoslynAnalyzers": true,
 		"files.exclude": {
 			"**/frontend/node_modules/**/*": true
 		}
