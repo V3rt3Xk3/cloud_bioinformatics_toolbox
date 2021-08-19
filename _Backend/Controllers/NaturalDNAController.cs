@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class NaturalDNAController : ControllerBase
