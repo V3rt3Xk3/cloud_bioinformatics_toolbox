@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 using Backend.Models;
 using Backend.Services;
+using Backend.Helpers;
 
 namespace Backend
 {
@@ -40,6 +41,11 @@ namespace Backend
 				sp.GetRequiredService<IOptions<CloudBioinformaticsDatabaseSettings>>().Value
 			);
 
+			// NOTE: Configuring the AppSettings
+			services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+
+			// NOTE: These will be the controller services
 			services.AddSingleton<NaturalDNAService>();
 
 
