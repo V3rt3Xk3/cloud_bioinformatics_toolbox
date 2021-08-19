@@ -32,7 +32,7 @@ namespace Backend.Authorization
 			byte[] key = Encoding.ASCII.GetBytes(_appSettings.Secret);
 			SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
 			{
-				Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+				Subject = new ClaimsIdentity(new[] { new Claim("userID", user.Id.ToString()) }),
 				Expires = DateTime.UtcNow.AddDays(7),
 				// BUG: I would like this to go Assymetric at somepoint
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
@@ -68,7 +68,7 @@ namespace Backend.Authorization
 				}, out SecurityToken validatedToken);
 
 				JwtSecurityToken JWTToken = (JwtSecurityToken)validatedToken;
-				string userId = JWTToken.Claims.First(hiddenId => hiddenId.Type == "id").Value;
+				string userId = JWTToken.Claims.First(_claim => _claim.Type == "userID").Value;
 
 				// Returning the userID if validation was successful
 				return userId;
