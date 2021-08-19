@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Backend.Models
 {
-	public class UserModelEntity
+	public class UserEntity
 	{
 		[BsonId]
 		[BsonRepresentation(BsonType.ObjectId)]
