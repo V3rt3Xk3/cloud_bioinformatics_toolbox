@@ -12,7 +12,9 @@ import UserRegistration from "./Pages/UserRegistration"
 
 // Misc
 import logo from './logo.svg';
-import './App.css';
+import './Css/Shared/App.scss';
+import "./Css/Shared/TopNavBar.scss";
+import "./Css/Shared/AppLoading.scss";
 
 interface IAppProperties {
 
@@ -36,7 +38,7 @@ class App extends React.Component<IAppProperties, IAppState> {
 	render() {
 		if (this.state.loading) {
 			return (
-				<div className="App" >
+				<div className="AppLoading" >
 					<header className="App-header">
 						<img src={logo} className="App-logo" alt="logo" />
 						<p>
