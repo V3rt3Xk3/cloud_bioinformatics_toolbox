@@ -34,7 +34,6 @@ namespace Backend.Authorization
 			{
 				Subject = new ClaimsIdentity(new[] { new Claim("userID", user.Id.ToString()) }),
 				Expires = DateTime.UtcNow.AddDays(7),
-				// BUG: I would like this to go Assymetric at somepoint
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
 			};
 			SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
@@ -59,7 +58,6 @@ namespace Backend.Authorization
 				tokenHandler.ValidateToken(token, new TokenValidationParameters
 				{
 					ValidateIssuerSigningKey = true,
-					// BUG: Then again, I want it to be assymetric.
 					IssuerSigningKey = new SymmetricSecurityKey(key),
 					ValidateIssuer = false,
 					ValidateAudience = false,
