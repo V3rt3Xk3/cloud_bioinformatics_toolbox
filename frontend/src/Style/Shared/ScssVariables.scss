@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
+
+// HTML Document General
+$background-color: #fcfcfc;
+$font-family: "Roboto", sans-serif;
+$font-size-base: 0.925rem;
+$text-base-color: #3c4250;
+$text-dark-color: #252931;
+$text-blue-color: #66f;
+
+// NAVBAR Stuff
+$navbar-body-color: #828297;
+// $navbar-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.035);
+$navbar-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$navbar-padding-y: 0rem;
+$navbar-padding-x: 1.15rem;
+$border-color: #eceef3;
+
+// NAVBAR Link Stuff
+$navbar-link-hover: $text-blue-color;
+$navbar-link-padding-y: 0.5rem;
+$navbar-link-padding-x: 1rem;

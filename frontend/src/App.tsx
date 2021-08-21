@@ -12,23 +12,35 @@ import UserRegistration from "./Pages/UserRegistration"
 
 // Misc
 import logo from './logo.svg';
-import './Css/Shared/App.scss';
-import "./Css/Shared/TopNavBar.scss";
-import "./Css/Shared/AppLoading.scss";
+import './Style/Shared/App.scss';
+import "./Style/Shared/TopNavBar.scss";
+import "./Style/Shared/AppLoading.scss";
+// Login Modal
+import LoginModal from "./Components/LoginModal";
 
 interface IAppProperties {
 
 }
 
 interface IAppState {
-	loading: boolean
+	loading: boolean,
+	showLoginModal: boolean
 }
 
 class App extends React.Component<IAppProperties, IAppState> {
 
 	constructor(properties: any) {
 		super(properties);
-		this.state = { loading: true }
+		this.state = {
+			loading: true,
+			showLoginModal: false
+		}
+	}
+
+	setShowLoginModal = () => {
+		this.setState({
+			showLoginModal: !this.state.showLoginModal
+		});
 	}
 
 	componentDidMount() {
@@ -58,19 +70,25 @@ class App extends React.Component<IAppProperties, IAppState> {
 		} else {
 			return (
 				<Router>
-					<nav>
-						<ul>
-							<li>
-								<Link to="/">Home</Link>
-							</li>
-							<li>
-								<Link to="/user/profile/">User profile</Link>
-							</li>
-							<li>
-								<Link to="/user/registration/">User registration</Link>
-							</li>
-						</ul>
+					<nav className="navbar">
+						<div className="navbar-menu">
+							<ul className="navbar-nav">
+								<li>
+									<Link to="/">Home</Link>
+								</li>
+								<li>
+									<Link to="/user/profile/">User profile</Link>
+								</li>
+								<li>
+									<Link to="/user/registration/">User registration</Link>
+								</li>
+								<li>
+									<a id="login-modal-trigger" href="#" onClick={_event => { this.setShowLoginModal(); }}>Login</a>
+								</li>
+							</ul>
+						</div>
 					</nav>
+					<LoginModal show={this.state.showLoginModal} onClose={this.setShowLoginModal} />
 					<Switch>
 						<Route path="/user/profile/">
 							<UserProfile />

@@ -1,0 +1,7 @@
+@use "./../Shared/ScssVariables.scss" as *;
+
+.modal-body {
+	display: block;
+	position: absolute;
+	margin: auto;
+}
