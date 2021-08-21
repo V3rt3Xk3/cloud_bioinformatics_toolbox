@@ -1,7 +1,23 @@
 @use "./../Shared/ScssVariables.scss" as *;
 
 .modal-body {
+	background-color: $background-color;
+	min-width: 25rem;
+
 	display: block;
 	position: absolute;
-	margin: auto;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border: 2px solid $border-color;
+}
+
+.modal-body {
+	padding: 1rem;
+}
+
+.modal-body>form>input,
+.modal-body>form>button {
+	display: block;
+	margin-top: 0.5rem;
 }
