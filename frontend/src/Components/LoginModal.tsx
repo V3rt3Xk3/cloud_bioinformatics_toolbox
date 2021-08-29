@@ -8,6 +8,7 @@ interface ILoginModalProperties {
 }
 
 interface ILoginModalState {
+	isLoading: boolean;
 	userName: string;
 	password: string;
 }
@@ -17,9 +18,14 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 	constructor(props: any) {
 		super(props);
 		this.state = {
+			isLoading: true,
 			userName: "",
 			password: ""
 		};
+	}
+
+	componentDidMount() {
+		this.setState({ isLoading: false });
 	}
 
 	onClose = () => {
@@ -40,16 +46,26 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 		if (!this.props.show) {
 			return null;
 		}
-		return (
-			<div className="modal-body">
-				<h4>Login</h4>
-				<form>
-					<input type="text" name="userName" className="username form-control" placeholder="Username" value={this.state.userName} onChange={this.handleChange} />
-					<input type="password" name="password" className="password form-control" placeholder="password" value={this.state.password} onChange={this.handleChange} />
-					<button id="login-form-close-trigger" type="submit">Login</button>
-					<button type="button" onClick={() => { this.onClose(); }}>Close</button>
-				</form>
-			</div >
-		);
+		else if (this.state.isLoading) {
+
+
+			return (
+				<div className="modal-body">
+					<h3>Loading</h3>
+				</div>
+			);
+		} else {
+			return (
+				<div className="modal-body">
+					<h4>Login</h4>
+					<form>
+						<input type="text" name="userName" className="username form-control" placeholder="Username" value={this.state.userName} onChange={this.handleChange} />
+						<input type="password" name="password" className="password form-control" placeholder="password" value={this.state.password} onChange={this.handleChange} />
+						<button id="login-form-close-trigger" type="submit">Login</button>
+						<button type="button" onClick={() => { this.onClose(); }}>Close</button>
+					</form>
+				</div >
+			);
+		}
 	}
 }
