@@ -42,13 +42,27 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 		this.setState(newState);
 	};
 
+	formSubmit = () => {
+		const requestOptions = {
+			method: "POST",
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				username: this.state.userName,
+				password: this.state.password
+			})
+		};
+		fetch("https://localhost:5001/api/users/authenticate", requestOptions)
+			.then((_response) => _response.json())
+			.then((_data) => console.log(_data));
+
+		this.props.onClose();
+	};
+
 	render() {
 		if (!this.props.show) {
 			return null;
 		}
 		else if (this.state.isLoading) {
-
-
 			return (
 				<div className="modal-body">
 					<h3>Loading</h3>
@@ -58,7 +72,7 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 			return (
 				<div className="modal-body">
 					<h4>Login</h4>
-					<form>
+					<form onSubmit={this.formSubmit}>
 						<input type="text" name="userName" className="username form-control" placeholder="Username" value={this.state.userName} onChange={this.handleChange} />
 						<input type="password" name="password" className="password form-control" placeholder="password" value={this.state.password} onChange={this.handleChange} />
 						<button id="login-form-close-trigger" type="submit">Login</button>

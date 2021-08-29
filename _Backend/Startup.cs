@@ -13,8 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
-
 using Backend.Models;
 using Backend.Services;
 using Backend.Helpers;
@@ -24,6 +22,7 @@ namespace Backend
 {
 	public class Startup
 	{
+		readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -34,6 +33,19 @@ namespace Backend
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddCors((_options) =>
+			{
+				_options.AddPolicy(name: MyAllowSpecificOrigins,
+									(_builder) =>
+									{
+										_builder
+											.WithOrigins("http://localhost:3000")
+											.AllowAnyHeader()
+											.AllowAnyMethod()
+											.AllowCredentials();
+									});
+			});
+
 			// Requires using Microsoft.Extensions.Options
 			services.Configure<CloudBioinformaticsDatabaseSettings>(
 				Configuration.GetSection(nameof(CloudBioinformaticsDatabaseSettings))
@@ -78,6 +90,8 @@ namespace Backend
 			app.UseHttpsRedirection();
 
 			app.UseRouting();
+
+			app.UseCors(MyAllowSpecificOrigins);
 
 			// // WOW: Turning off the Microsoft Auth middleware -> To add the one we implemented
 			// app.UseAuthorization();
