@@ -71,10 +71,51 @@ namespace Backend.Services
 			return authResponse;
 		}
 
-		// public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
-		// {
+		public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
+		{
+			UserEntity user = await getUserByRefreshToken(token);
+			RefreshToken refreshToken = user.RefreshTokens.Single((_token) => _token.Token == token);
 
-		// }
+			if (refreshToken.IsRevoked)
+			{
+				// Revoke all descendant tokens in case of this token has been compormised
+				await revokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
+				// NOTE: At this point for me, it seems like the revokeRefreshToken updates the DB.
+				// Refer to: https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens > UserServices.cs
+			}
+
+			if (!refreshToken.IsActive) throw new AppException("Invalid token");
+
+			// Replace old refresh token with a new one (rotate token)
+			RefreshToken newRefreshToken = await RotateRefreshToken(user, refreshToken, ipAddress);
+
+			// FIXME: Again this DB entry needs testing as well - mark if done.
+			// FIXME: Might as well do a refactoring.
+			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.Eq((_user) => _user.Id, user.Id);
+			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.Push((_user) => _user.RefreshTokens, newRefreshToken);
+			await _userEntity.UpdateOneAsync(filter, update);
+
+			// Remove old tokens
+			await RemoveOldRefreshTokens(user);
+
+			// Generate new jwt accessToken
+			string accessToken = _jwtUtils.GenerateAccessToken(user);
+
+			return new AuthenticateResponse(user, accessToken, newRefreshToken.Token);
+		}
+
+		public async Task RevokeToken(string token, string ipAddress)
+		{
+			UserEntity user = await getUserByRefreshToken(token);
+			RefreshToken refreshToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == token);
+
+			if (!refreshToken.IsActive) throw new AppException("Invalid token");
+
+			// Revoke token and save
+			await RevokeRefreshToken(user, refreshToken, ipAddress, "Revoked without replacement!");
+			// NOTE: Again, for me it seems like the DB access is done in the private method.
+			return;
+		}
 
 		public async Task<List<UserEntity>> GetAsync()
 		{
@@ -130,11 +171,12 @@ namespace Backend.Services
 			return user;
 		}
 
-		// private RefreshToken RotateRefreshToken(RefreshToken refreshToken, string ipAddress)
-		// {
-		// 	RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress);
-
-		// }
+		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress)
+		{
+			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress);
+			await RevokeRefreshToken(user, oldRefreshToken, ipAddress, "Replaced by new token!", newToken.Token);
+			return newToken;
+		}
 
 		private async Task RemoveOldRefreshTokens(UserEntity user)
 		{
@@ -144,6 +186,36 @@ namespace Backend.Services
 					(_field) => !_field.IsActive && (_field.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow));
 
 			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });
+			return;
+		}
+
+		private async Task revokeDescendantRefreshTokens(RefreshToken refreshToken, UserEntity user, string ipAddress, string reason)
+		{
+			// FIXME: This method needs testing.
+			// recursively traverse the refresh token chain and ensure all descendants are revoked
+			if (!string.IsNullOrEmpty(refreshToken.ReplacedByToken))
+			{
+				RefreshToken childToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == refreshToken.ReplacedByToken);
+				if (childToken.IsActive) await RevokeRefreshToken(user, childToken, ipAddress, reason);
+				else await revokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
+
+			}
+		}
+		// TODO: This could be a point of optimization as we make a DB entry everytime a token is modified.
+		private async Task RevokeRefreshToken(UserEntity user, RefreshToken token, string ipAddress, string reason = null, string replacedByToken = null)
+		{
+			token.Revoked = DateTime.UtcNow;
+			token.RevokedByIp = ipAddress;
+			token.ReasonsRevoked = reason;
+			token.ReplacedByToken = replacedByToken;
+
+			// BUG: This DB query needs explicit testing. - mark if done!
+			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.And(
+													Builders<UserEntity>.Filter.Eq((_user) => _user.Id, user.Id),
+													Builders<UserEntity>.Filter.ElemMatch((_user) => _user.RefreshTokens,
+																							(_field) => _field.Token == token.Token));
+			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.Set((_user) => _user.RefreshTokens[-1], token);
+			await _userEntity.UpdateOneAsync(filter, update);
 			return;
 		}
 	}
