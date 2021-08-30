@@ -66,14 +66,14 @@ namespace Backend.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAllUsersAsync()
 		{
-			List<UserEntity> users = await _userService.GetAsync();
+			List<UserEntity> users = await _userService.GetAllUsersAsync();
 			return Ok(users);
 		}
 
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetUserByIdAsync(string id)
 		{
-			UserEntity user = await _userService.GetAsyncById(id);
+			UserEntity user = await _userService.GetUserByIdAsync(id);
 			return Ok(user);
 		}
 

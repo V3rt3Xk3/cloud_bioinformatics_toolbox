@@ -27,7 +27,7 @@ namespace Backend.Authorization
 			string userId = jwtUtils.ValidateAccessToken(token);
 			if (userId != null)
 			{
-				context.Items["User"] = await userService.GetAsyncById(userId);
+				context.Items["User"] = await userService.GetUserByIdAsync(userId);
 			}
 			await this._next(context);
 			return;

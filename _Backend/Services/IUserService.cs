@@ -15,8 +15,8 @@ namespace Backend.Services
 		Task RevokeToken(string token, string ipAddress);
 
 		// User methods
-		Task<List<UserEntity>> GetAsync();
-		Task<UserEntity> GetAsyncById(string id);
+		Task<List<UserEntity>> GetAllUsersAsync();
+		Task<UserEntity> GetUserByIdAsync(string id);
 		Task Register(RegisterRequest model);
 	}
 }

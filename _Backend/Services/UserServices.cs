@@ -42,6 +42,23 @@ namespace Backend.Services
 			this._mapper = mapper;
 		}
 
+		public async Task Register(RegisterRequest model)
+		{
+			// Validate
+			if (await this.DoesUserExistsByUsername(model.Username) != null) throw new AppException($"Username '{model.Username}' is already taken!");
+
+			// RegisterRequest mapped to UserEntity
+			UserEntity user = _mapper.Map<UserEntity>(model);
+
+			// hashing Password
+			// BUG: we don't test whether the Password and RePassword match. IT SHOULD BE DONE.
+			user.PasswordHashed = BCryptNet.HashPassword(model.Password);
+
+			// Save User
+			_userEntity.InsertOne(user);
+			return;
+		}
+
 		public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
 		{
 			IAsyncCursor<UserEntity> userCursor = await _userEntity.FindAsync<UserEntity>(
@@ -117,13 +134,13 @@ namespace Backend.Services
 			return;
 		}
 
-		public async Task<List<UserEntity>> GetAsync()
+		public async Task<List<UserEntity>> GetAllUsersAsync()
 		{
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync(NaturalDNASequence => true);
 			return await requestResults.ToListAsync();
 		}
 
-		public async Task<UserEntity> GetAsyncById(string id)
+		public async Task<UserEntity> GetUserByIdAsync(string id)
 		{
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
 																						user => user.Id == id);
@@ -131,23 +148,6 @@ namespace Backend.Services
 			if (user == null) return null;
 
 			return user;
-		}
-
-		public async Task Register(RegisterRequest model)
-		{
-			// Validate
-			if (await this.DoesUserExistsByUsername(model.Username) != null) throw new AppException($"Username '{model.Username}' is already taken!");
-
-			// RegisterRequest mapped to UserEntity
-			UserEntity user = _mapper.Map<UserEntity>(model);
-
-			// hashing Password
-			// BUG: we don't test whether the Password and RePassword match. IT SHOULD BE DONE.
-			user.PasswordHashed = BCryptNet.HashPassword(model.Password);
-
-			// Save User
-			_userEntity.InsertOne(user);
-			return;
 		}
 
 		// NOTE: Helper functions:
