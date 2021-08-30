@@ -74,6 +74,7 @@ $mongosh --authenticationDatabase "cloud_bioinformatics" -u "cloud_bioinformaitc
 ### Great MongoDB Tutorial, although for C
 
 URL: https://www.codepoc.io/blog/c-sharp/6100/update-record-in-mongodb-using-c \
+URL: https://chsakell.gitbook.io/mongodb-csharp-docs/crud-basics/ \
 
 ### Mongo DevURI
 const DB_USER: string = "cloud_bioinformaitcs_mongo_dev";\
