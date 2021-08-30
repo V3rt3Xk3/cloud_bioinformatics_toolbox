@@ -20,11 +20,11 @@ namespace Backend.Models.UserManagement
 		[JsonIgnore]
 		public string RefreshToken { get; set; }
 
-		public AuthenticateResponse(UserEntity _user, string JWTToken, string refreshToken)
+		public AuthenticateResponse(UserEntity _user, string accessToken, string refreshToken)
 		{
 			this.Id = _user.Id;
 			this.Username = _user.Username;
-			this.AccessToken = JWTToken;
+			this.AccessToken = accessToken;
 			this.RefreshToken = refreshToken;
 		}
 	}
