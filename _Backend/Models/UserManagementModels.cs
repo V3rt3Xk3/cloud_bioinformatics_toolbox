@@ -47,4 +47,8 @@ namespace Backend.Models.UserManagement
 		public string Password { get; set; }
 		public string RePassword { get; set; }
 	}
+	public class RevokeTokenRequest
+	{
+		public string RefreshToken { get; set; }
+	}
 }

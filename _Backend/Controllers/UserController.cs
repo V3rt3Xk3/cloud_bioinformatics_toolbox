@@ -51,6 +51,18 @@ namespace Backend.Controllers
 			return Ok(response);
 		}
 
+		[HttpPost("revoke-token")]
+		public async Task<IActionResult> RevokeToken(RevokeTokenRequest model)
+		{
+			// Accepts refresh token in request body or cookie
+			string token = model.RefreshToken ?? Request.Cookies["refreshToken"];
+
+			if (string.IsNullOrEmpty(token)) return BadRequest(new { message = "Token revoked" });
+
+			await _userService.RevokeToken(token, IpAddress());
+			return Ok(new { message = "Token revoked!" });
+		}
+
 
 		// WOW: Helper methods
 		// BUG: This method needs to be used, so it can be saved.
