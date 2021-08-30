@@ -14,9 +14,10 @@ namespace Backend.Authorization
 {
 	public interface IJWTUtils
 	{
-		public string GenerateToken(UserEntity user);
+		public string GenerateAccessToken(UserEntity user);
+		public string ValidateAccessToken(string token);
 		public RefreshToken GenerateRefreshToken(string ipAddress);
-		public string ValidateToken(string token);
+
 	}
 
 	public class JWTUtils : IJWTUtils
@@ -28,7 +29,7 @@ namespace Backend.Authorization
 			this._appSettings = appSettings.Value;
 		}
 
-		public string GenerateToken(UserEntity user)
+		public string GenerateAccessToken(UserEntity user)
 		{
 			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 			byte[] key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -43,7 +44,7 @@ namespace Backend.Authorization
 			return tokenHandler.WriteToken(token);
 		}
 
-		public string ValidateToken(string token)
+		public string ValidateAccessToken(string token)
 		{
 			// Returning a null if the token does not exist.
 			if (token == null) return null;
