@@ -36,7 +36,7 @@ namespace Backend.Authorization
 			SecurityTokenDescriptor tokenDescriptor = new()
 			{
 				Subject = new ClaimsIdentity(new[] { new Claim("userID", user.Id.ToString()) }),
-				Expires = DateTime.UtcNow.AddDays(7),
+				Expires = DateTime.UtcNow.AddMinutes(15),
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
 			};
 			SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
@@ -50,7 +50,7 @@ namespace Backend.Authorization
 			if (token == null) return null;
 
 			// Handling the token
-			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+			JwtSecurityTokenHandler tokenHandler = new();
 			byte[] key = Encoding.ASCII.GetBytes(_appSettings.Secret);
 
 			// Validating the token
