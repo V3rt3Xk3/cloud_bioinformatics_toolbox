@@ -51,7 +51,7 @@ namespace Backend.Services
 			// Validate
 			if (user == null || !BCryptNet.Verify(model.Password, user.PasswordHashed))
 			{
-				throw new AddException("Username or password is incorrect");
+				throw new AppException("Username or password is incorrect");
 			}
 
 
@@ -97,7 +97,7 @@ namespace Backend.Services
 		public async Task Register(RegisterRequest model)
 		{
 			// Validate
-			if (await this.DoesUserExistsByUsername(model.Username) != null) throw new AddException($"Username '{model.Username}' is already taken!");
+			if (await this.DoesUserExistsByUsername(model.Username) != null) throw new AppException($"Username '{model.Username}' is already taken!");
 
 			// RegisterRequest mapped to UserEntity
 			UserEntity user = _mapper.Map<UserEntity>(model);
@@ -120,8 +120,19 @@ namespace Backend.Services
 			return await requestResults.FirstOrDefaultAsync<UserEntity>();
 		}
 
-		// private async Task<UserEntity> getUserByRefreshToken(string token)
+		private async Task<UserEntity> getUserByRefreshToken(string token)
+		{
+			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
+												(_user) => _user.RefreshTokens.Any((_token) => _token.Token == token));
+			UserEntity user = await requestResults.FirstOrDefaultAsync<UserEntity>();
+			if (user == null) throw new AppException("Invalid token");
+
+			return user;
+		}
+
+		// private RefreshToken RotateRefreshToken(RefreshToken refreshToken, string ipAddress)
 		// {
+		// 	RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress);
 
 		// }
 
