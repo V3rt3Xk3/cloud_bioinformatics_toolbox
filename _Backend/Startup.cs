@@ -93,6 +93,9 @@ namespace Backend
 
 			app.UseCors(MyAllowSpecificOrigins);
 
+			// HACK: Error handling middleware
+			app.UseMiddleware<ErrorHandlerMiddleware>();
+
 			// // WOW: Turning off the Microsoft Auth middleware -> To add the one we implemented
 			// app.UseAuthorization();
 			app.UseMiddleware<JWTMiddleware>();
