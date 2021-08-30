@@ -33,15 +33,15 @@ namespace Backend.Controllers
 			return Ok(response);
 		}
 
-		// [AllowAnonymous]
-		// [HttpPost("refresh-token")]
-		// public async Task<IActionResult> RefreshToken()
-		// {
-		// 	string refreshToken = Request.Cookies["refreshToken"];
-		// 	var response = _userService.RefreshToken(refreshToken, IpAddress());
-		// 	SetTokenCookie(response.RefreshToken);
-		// 	return Ok(response);
-		// }
+		[AllowAnonymous]
+		[HttpPost("refresh-token")]
+		public async Task<IActionResult> RefreshToken()
+		{
+			string refreshToken = Request.Cookies["refreshToken"];
+			AuthenticateResponse response = await _userService.RefreshToken(refreshToken, IpAddress());
+			SetTokenCookie(response.RefreshToken);
+			return Ok(response);
+		}
 
 
 		[AllowAnonymous]
