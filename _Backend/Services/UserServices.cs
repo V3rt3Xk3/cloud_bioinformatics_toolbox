@@ -73,13 +73,13 @@ namespace Backend.Services
 
 		public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
 		{
-			UserEntity user = await getUserByRefreshToken(token);
+			UserEntity user = await GetUserByRefreshToken(token);
 			RefreshToken refreshToken = user.RefreshTokens.Single((_token) => _token.Token == token);
 
 			if (refreshToken.IsRevoked)
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				await revokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
+				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
 				// NOTE: At this point for me, it seems like the revokeRefreshToken updates the DB.
 				// Refer to: https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens > UserServices.cs
 			}
@@ -106,7 +106,7 @@ namespace Backend.Services
 
 		public async Task RevokeToken(string token, string ipAddress)
 		{
-			UserEntity user = await getUserByRefreshToken(token);
+			UserEntity user = await GetUserByRefreshToken(token);
 			RefreshToken refreshToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == token);
 
 			if (!refreshToken.IsActive) throw new AppException("Invalid token");
@@ -132,8 +132,6 @@ namespace Backend.Services
 
 			return user;
 		}
-
-
 
 		public async Task Register(RegisterRequest model)
 		{
@@ -161,7 +159,7 @@ namespace Backend.Services
 			return await requestResults.FirstOrDefaultAsync<UserEntity>();
 		}
 
-		private async Task<UserEntity> getUserByRefreshToken(string token)
+		private async Task<UserEntity> GetUserByRefreshToken(string token)
 		{
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
 												(_user) => _user.RefreshTokens.Any((_token) => _token.Token == token));
@@ -189,7 +187,7 @@ namespace Backend.Services
 			return;
 		}
 
-		private async Task revokeDescendantRefreshTokens(RefreshToken refreshToken, UserEntity user, string ipAddress, string reason)
+		private async Task RevokeDescendantRefreshTokens(RefreshToken refreshToken, UserEntity user, string ipAddress, string reason)
 		{
 			// FIXME: This method needs testing.
 			// recursively traverse the refresh token chain and ensure all descendants are revoked
@@ -197,7 +195,7 @@ namespace Backend.Services
 			{
 				RefreshToken childToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == refreshToken.ReplacedByToken);
 				if (childToken.IsActive) await RevokeRefreshToken(user, childToken, ipAddress, reason);
-				else await revokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
+				else await RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
 
 			}
 		}

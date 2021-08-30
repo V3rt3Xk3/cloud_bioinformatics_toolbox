@@ -18,13 +18,5 @@ namespace Backend.Services
 		Task<List<UserEntity>> GetAsync();
 		Task<UserEntity> GetAsyncById(string id);
 		Task Register(RegisterRequest model);
-		private Task<UserEntity> DoesUserExistsByUsername(string username);
-		private Task<UserEntity> getUserByRefreshToken(string token);
-
-		// Token methods
-		private Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress);
-		private Task RemoveOldRefreshTokens(UserEntity user);
-		private Task revokeDescendantRefreshTokens(RefreshToken refreshToken, UserEntity user, string ipAddress, string reason);
-		private Task RevokeRefreshToken(UserEntity user, RefreshToken token, string ipAddress, string reason = null, string replacedByToken = null);
 	}
 }
