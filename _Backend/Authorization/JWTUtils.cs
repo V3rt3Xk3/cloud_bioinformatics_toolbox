@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
 
 using Backend.Models;
 using Backend.Helpers;
@@ -14,6 +15,7 @@ namespace Backend.Authorization
 	public interface IJWTUtils
 	{
 		public string GenerateToken(UserEntity user);
+		public RefreshToken GenerateRefreshToken(string ipAddress);
 		public string ValidateToken(string token);
 	}
 
@@ -76,6 +78,24 @@ namespace Backend.Authorization
 				// Return null if validation fails.
 				return null;
 			}
+		}
+
+		public RefreshToken GenerateRefreshToken(string ipAddress)
+		{
+			// Generate token that is valid for 7 days
+			using RNGCryptoServiceProvider rngCryptoServiceProvider = new();
+
+			byte[] randomBytes = new byte[64];
+			rngCryptoServiceProvider.GetBytes(randomBytes);
+			RefreshToken refreshToken = new()
+			{
+				Token = Convert.ToBase64String(randomBytes),
+				Expires = DateTime.UtcNow.AddDays(7),
+				Created = DateTime.UtcNow,
+				CreatedByIp = ipAddress
+			};
+
+			return refreshToken;
 		}
 	}
 }

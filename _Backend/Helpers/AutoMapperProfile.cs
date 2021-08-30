@@ -9,9 +9,6 @@ namespace Backend.Helpers
 	{
 		public AutoMapperProfile()
 		{
-			// UserEntity -> AuthenticateResponse
-			CreateMap<UserEntity, AuthenticateResponse>();
-
 			// RegistrationRequest -> UserEntity
 			CreateMap<RegisterRequest, UserEntity>();
 

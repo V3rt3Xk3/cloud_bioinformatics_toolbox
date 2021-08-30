@@ -71,6 +71,10 @@ $mongosh --authenticationDatabase "cloud_bioinformatics" -u "cloud_bioinformaitc
 * MongoDB server version: 5.0.1
 * Mongosh: 1.0.1
 
+### Great MongoDB Tutorial, although for C
+
+URL: https://www.codepoc.io/blog/c-sharp/6100/update-record-in-mongodb-using-c \
+
 ### Mongo DevURI
 const DB_USER: string = "cloud_bioinformaitcs_mongo_dev";\
 const DB_PASS: string = encodeURIComponent("#33FalleN666#");\

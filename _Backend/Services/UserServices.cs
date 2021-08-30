@@ -1,6 +1,11 @@
 using AutoMapper;
 using BCryptNet = BCrypt.Net.BCrypt;
 
+using Microsoft.Extensions.Options;
+using System;
+using System.Net.Http;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,27 +24,29 @@ namespace Backend.Services
 		private readonly IMongoDatabase database;
 		public string CollectionName { get; }
 		private IJWTUtils _jwtUtils;
+		private readonly AppSettings _appSettings;
 		private readonly IMapper _mapper;
 
 
 
-		public UserService(ICloudBioinformaticsDatabaseSettings settings, IJWTUtils JWTUtils, IMapper mapper)
+		public UserService(ICloudBioinformaticsDatabaseSettings settings, IJWTUtils JWTUtils, IMapper mapper, IOptions<AppSettings> appSettings)
 		{
-			MongoClient client = new MongoClient(settings.ConnectionString);
+			MongoClient client = new(settings.ConnectionString);
 			this.database = client.GetDatabase(settings.DatabaseName);
 			this.CollectionName = settings.Users_CollectionName;
 
 			_userEntity = database.GetCollection<UserEntity>(this.CollectionName);
 
+			this._appSettings = appSettings.Value;
 			this._jwtUtils = JWTUtils;
 			this._mapper = mapper;
 		}
 
-		public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
+		public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
 		{
 			IAsyncCursor<UserEntity> userCursor = await _userEntity.FindAsync<UserEntity>(
 																		user => user.Username == model.Username);
-			UserEntity user = await userCursor.FirstAsync<UserEntity>();
+			UserEntity user = await userCursor.FirstOrDefaultAsync<UserEntity>();
 
 			// Validate
 			if (user == null || !BCryptNet.Verify(model.Password, user.PasswordHashed))
@@ -47,11 +54,27 @@ namespace Backend.Services
 				throw new AddException("Username or password is incorrect");
 			}
 
+
+			string JWTToken = this._jwtUtils.GenerateToken(user);
+
+			RefreshToken refreshToken = this._jwtUtils.GenerateRefreshToken(ipAddress);
+
 			// Authentication Successful
-			AuthenticateResponse response = _mapper.Map<AuthenticateResponse>(user);
-			response.JWTToken = this._jwtUtils.GenerateToken(user);
-			return response;
+			AuthenticateResponse authResponse = new(user, JWTToken, refreshToken.Token);
+
+			// WOW: This looked like the only 
+			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.Eq("Id", user.Id);
+			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.AddToSet("RefreshTokens", refreshToken);
+			_userEntity.UpdateOne(filter, update);
+
+
+			return authResponse;
 		}
+
+		// public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
+		// {
+
+		// }
 
 		public async Task<List<UserEntity>> GetAsync()
 		{
@@ -97,5 +120,20 @@ namespace Backend.Services
 			return await requestResults.FirstOrDefaultAsync<UserEntity>();
 		}
 
+		// private async Task<UserEntity> getUserByRefreshToken(string token)
+		// {
+
+		// }
+
+		private async Task RemoveOldRefreshTokens(UserEntity user)
+		{
+			// Remove old inactive refresh tokens from user based on TTL in app settings
+			// FIXME: This update filter checks for an AND relationship betwen active and obsolete refresh tokens
+			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.PullFilter((_document) => _document.RefreshTokens,
+					(_field) => !_field.IsActive && (_field.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow));
+
+			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });
+			return;
+		}
 	}
 }

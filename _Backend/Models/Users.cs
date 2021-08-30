@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Backend.Models
 {
@@ -17,5 +18,8 @@ namespace Backend.Models
 
 		[JsonIgnore]
 		public string PasswordHashed { get; set; }
+		[BsonIgnoreIfNull]
+		[JsonIgnore]
+		public List<RefreshToken> RefreshTokens { get; set; }
 	}
 }
