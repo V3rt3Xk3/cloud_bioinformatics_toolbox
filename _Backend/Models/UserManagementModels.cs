@@ -16,7 +16,7 @@ namespace Backend.Models.UserManagement
 	{
 		public string Id { get; set; }
 		public string Username { get; set; }
-		public string JWTToken { get; set; }
+		public string AccessToken { get; set; }
 		[JsonIgnore]
 		public string RefreshToken { get; set; }
 
@@ -24,7 +24,7 @@ namespace Backend.Models.UserManagement
 		{
 			this.Id = _user.Id;
 			this.Username = _user.Username;
-			this.JWTToken = JWTToken;
+			this.AccessToken = JWTToken;
 			this.RefreshToken = refreshToken;
 		}
 	}
