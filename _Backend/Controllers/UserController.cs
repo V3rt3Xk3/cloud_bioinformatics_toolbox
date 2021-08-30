@@ -63,6 +63,13 @@ namespace Backend.Controllers
 			return Ok(new { message = "Token revoked!" });
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> GetAll()
+		{
+			List<UserEntity> users = await _userService.GetAsync();
+			return Ok(users);
+		}
+
 
 		// WOW: Helper methods
 		// BUG: This method needs to be used, so it can be saved.
