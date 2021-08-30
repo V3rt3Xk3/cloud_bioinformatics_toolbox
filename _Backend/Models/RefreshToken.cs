@@ -16,8 +16,8 @@ namespace Backend.Models
 		public string RevokedByIp { get; set; }
 		public string ReplacedByToken { get; set; }
 		public string ReasonsRevoked { get; set; }
-		public bool IsExpired { get; set; }
-		public bool IsRevoked { get; set; }
-		public bool IsActive { get; set; }
+		public bool IsExpired => (DateTime.UtcNow >= Expires);
+		public bool IsRevoked => Revoked != null;
+		public bool IsActive => (!IsRevoked && !IsExpired);
 	}
 }
