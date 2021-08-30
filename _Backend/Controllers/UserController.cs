@@ -64,11 +64,19 @@ namespace Backend.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAll()
+		public async Task<IActionResult> GetAllUsersAsync()
 		{
 			List<UserEntity> users = await _userService.GetAsync();
 			return Ok(users);
 		}
+
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetUserByIdAsync(string id)
+		{
+			UserEntity user = await _userService.GetAsyncById(id);
+			return Ok(user);
+		}
+
 
 
 		// WOW: Helper methods

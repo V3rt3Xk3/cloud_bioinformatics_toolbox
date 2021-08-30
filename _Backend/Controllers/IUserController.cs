@@ -17,6 +17,7 @@ namespace Backend.Controllers
 		Task<IActionResult> RevokeToken(RevokeTokenRequest model);
 
 		// User management methods
-		Task<IActionResult> GetAll();
+		Task<IActionResult> GetAllUsersAsync();
+		Task<IActionResult> GetUserByIdAsync();
 	}
 }
