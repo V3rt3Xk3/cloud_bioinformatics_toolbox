@@ -24,7 +24,7 @@ namespace Backend.Authorization
 		public async Task Invoke(HttpContext context, IUserService userService, IJWTUtils jwtUtils)
 		{
 			string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(' ').Last();
-			string userId = jwtUtils.ValidateToken(token);
+			string userId = jwtUtils.ValidateAccessToken(token);
 			if (userId != null)
 			{
 				context.Items["User"] = await userService.GetAsyncById(userId);

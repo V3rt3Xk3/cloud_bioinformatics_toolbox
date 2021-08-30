@@ -55,7 +55,7 @@ namespace Backend.Services
 			}
 
 
-			string JWTToken = this._jwtUtils.GenerateToken(user);
+			string JWTToken = this._jwtUtils.GenerateAccessToken(user);
 
 			RefreshToken refreshToken = this._jwtUtils.GenerateRefreshToken(ipAddress);
 
