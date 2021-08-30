@@ -25,6 +25,14 @@ namespace Backend.Controllers
 		}
 
 		[AllowAnonymous]
+		[HttpPost("register")]
+		public async Task<IActionResult> Register([FromBody] RegisterRequest model)
+		{
+			await _userService.Register(model);
+			return Ok(new { message = "Registration successful" });
+		}
+
+		[AllowAnonymous]
 		[HttpPost("authenticate")]
 		public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
 		{
@@ -43,14 +51,6 @@ namespace Backend.Controllers
 			return Ok(response);
 		}
 
-
-		[AllowAnonymous]
-		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] RegisterRequest model)
-		{
-			await _userService.Register(model);
-			return Ok(new { message = "Registration successful" });
-		}
 
 		// WOW: Helper methods
 		// BUG: This method needs to be used, so it can be saved.
