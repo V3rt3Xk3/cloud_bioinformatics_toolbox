@@ -91,7 +91,7 @@ namespace Backend.Authorization
 			RefreshToken refreshToken = new()
 			{
 				Token = Convert.ToBase64String(randomBytes),
-				Expires = DateTime.UtcNow.AddDays(7),
+				Expires = DateTime.UtcNow.AddDays(this._appSettings.RefreshTokenTTL),
 				Created = DateTime.UtcNow,
 				CreatedByIp = ipAddress
 			};

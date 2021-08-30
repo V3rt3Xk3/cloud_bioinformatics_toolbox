@@ -93,7 +93,7 @@ namespace Backend.Services
 			UserEntity user = await GetUserByRefreshToken(token);
 			RefreshToken refreshToken = user.RefreshTokens.Single((_token) => _token.Token == token);
 
-			if (refreshToken.IsRevoked)
+			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
 				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
@@ -101,7 +101,7 @@ namespace Backend.Services
 				// Refer to: https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens > UserServices.cs
 			}
 
-			if (!refreshToken.IsActive) throw new AppException("Invalid token");
+			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
 
 			// Replace old refresh token with a new one (rotate token)
 			RefreshToken newRefreshToken = await RotateRefreshToken(user, refreshToken, ipAddress);
@@ -126,7 +126,7 @@ namespace Backend.Services
 			UserEntity user = await GetUserByRefreshToken(token);
 			RefreshToken refreshToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == token);
 
-			if (!refreshToken.IsActive) throw new AppException("Invalid token");
+			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
 
 			// Revoke token and save
 			await RevokeRefreshToken(user, refreshToken, ipAddress, "Revoked without replacement!");
@@ -181,7 +181,8 @@ namespace Backend.Services
 			// Remove old inactive refresh tokens from user based on TTL in app settings
 			// FIXME: This update filter checks for an AND relationship betwen active and obsolete refresh tokens
 			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.PullFilter((_document) => _document.RefreshTokens,
-					(_field) => !_field.IsActive && (_field.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow));
+					(_field) => (_field.Revoked != null) &&
+								(_field.Expires <= DateTime.UtcNow));
 
 			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });
 			return;
@@ -194,7 +195,7 @@ namespace Backend.Services
 			if (!string.IsNullOrEmpty(refreshToken.ReplacedByToken))
 			{
 				RefreshToken childToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == refreshToken.ReplacedByToken);
-				if (childToken.IsActive) await RevokeRefreshToken(user, childToken, ipAddress, reason);
+				if (IsTokenActive(childToken)) await RevokeRefreshToken(user, childToken, ipAddress, reason);
 				else await RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
 
 			}
@@ -216,5 +217,10 @@ namespace Backend.Services
 			await _userEntity.UpdateOneAsync(filter, update);
 			return;
 		}
+
+		private bool IsTokenActive(RefreshToken token) => (!IsTokenRevoked(token) && !IsTokenExpired(token));
+
+		private bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
+		private bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
 	}
 }
