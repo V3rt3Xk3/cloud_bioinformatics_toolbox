@@ -29,6 +29,7 @@ namespace Backend.Controllers
 		public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
 		{
 			AuthenticateResponse response = await _userService.Authenticate(model, IpAddress());
+			SetTokenCookie(response.RefreshToken);
 			return Ok(response);
 		}
 
