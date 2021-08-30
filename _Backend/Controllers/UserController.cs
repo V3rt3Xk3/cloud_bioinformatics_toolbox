@@ -16,7 +16,7 @@ namespace Backend.Controllers
 	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
-	public class UsersController : ControllerBase
+	public class UsersController : ControllerBase, IUserController
 	{
 		private readonly IUserService _userService;
 		public UsersController(IUserService userService)
