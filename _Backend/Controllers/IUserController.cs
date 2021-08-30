@@ -18,6 +18,6 @@ namespace Backend.Controllers
 
 		// User management methods
 		Task<IActionResult> GetAllUsersAsync();
-		Task<IActionResult> GetUserByIdAsync();
+		Task<IActionResult> GetUserByIdAsync(string id);
 	}
 }
