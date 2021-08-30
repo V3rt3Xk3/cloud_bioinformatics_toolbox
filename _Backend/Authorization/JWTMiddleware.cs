@@ -29,7 +29,7 @@ namespace Backend.Authorization
 			{
 				context.Items["User"] = await userService.GetAsyncById(userId);
 			}
-			await _next(context);
+			await this._next(context);
 			return;
 		}
 	}
