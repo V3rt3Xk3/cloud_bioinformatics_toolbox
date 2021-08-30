@@ -31,9 +31,9 @@ namespace Backend.Authorization
 
 		public string GenerateAccessToken(UserEntity user)
 		{
-			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+			JwtSecurityTokenHandler tokenHandler = new();
 			byte[] key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-			SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+			SecurityTokenDescriptor tokenDescriptor = new()
 			{
 				Subject = new ClaimsIdentity(new[] { new Claim("userID", user.Id.ToString()) }),
 				Expires = DateTime.UtcNow.AddDays(7),
