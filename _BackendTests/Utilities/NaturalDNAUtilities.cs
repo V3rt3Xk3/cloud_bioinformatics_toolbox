@@ -12,7 +12,7 @@ namespace BackendTests.Utilities
 			string dataFilePath = "./Utilities/DataFiles/NaturalDNATestData.json";
 			string singleSequenceDocument;
 
-			using (StreamReader readerAgent = new StreamReader(dataFilePath))
+			using (StreamReader readerAgent = new(dataFilePath))
 			{
 				string jsonInput = readerAgent.ReadToEnd();
 				JArray jsonArrayParsed = JArray.Parse(jsonInput);

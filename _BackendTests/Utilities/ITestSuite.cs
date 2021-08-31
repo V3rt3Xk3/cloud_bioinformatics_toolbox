@@ -23,7 +23,7 @@ namespace BackendTests.Utilities
 		public static void MongoDBCleanUp()
 		{
 			string connectionString = "mongodb://cloud_bioinformaitcs_mongo_dev:%2333FalleN666%23@localhost:27017/?authSource=cloud_bioinformatics_test";
-			MongoClient client = new MongoClient(connectionString);
+			MongoClient client = new(connectionString);
 
 			string DatabaseNamespace = "cloud_bioinformatics_test";
 			client.DropDatabase(DatabaseNamespace);

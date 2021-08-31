@@ -183,7 +183,7 @@ namespace Backend.Services
 			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.PullFilter((_document) => _document.RefreshTokens,
 					(_field) => (_field.Revoked != null) &&
 								(_field.Expires <= DateTime.UtcNow) &&
-								(_field.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow));
+								(_field.Created <= DateTime.UtcNow.AddDays(-1 * _appSettings.RefreshTokenTTL)));
 
 			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });
 			return;
@@ -219,9 +219,9 @@ namespace Backend.Services
 			return;
 		}
 
-		private bool IsTokenActive(RefreshToken token) => (!IsTokenRevoked(token) && !IsTokenExpired(token));
+		private static bool IsTokenActive(RefreshToken token) => (!IsTokenRevoked(token) && !IsTokenExpired(token));
 
-		private bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
-		private bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
+		private static bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
+		private static bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
 	}
 }

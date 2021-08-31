@@ -67,7 +67,7 @@ namespace BackendTests
 			HttpClient client = _factory.CreateClient();
 
 			string json2POST = NaturalDNA_TestUtilities.LoadTestData_SingleEntity();
-			StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
+			StringContent jsonContent = new(json2POST, Encoding.UTF8, "application/json");
 
 			// Act
 			HttpResponseMessage response = await client.PostAsync("/api/naturalDNA", jsonContent);
@@ -92,7 +92,7 @@ namespace BackendTests
 			for (int i = 0; i < 3; i++)
 			{
 				string json2POST = NaturalDNA_TestUtilities.LoadTestData_SingleEntity(i);
-				StringContent jsonContent = new StringContent(json2POST, Encoding.UTF8, "application/json");
+				StringContent jsonContent = new(json2POST, Encoding.UTF8, "application/json");
 				await client.PostAsync("/api/naturalDNA", jsonContent);
 			}
 
