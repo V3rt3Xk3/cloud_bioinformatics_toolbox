@@ -17,7 +17,7 @@ namespace Backend.Services
 
 		public NaturalDNAService(ICloudBioinformaticsDatabaseSettings settings)
 		{
-			MongoClient client = new MongoClient(settings.ConnectionString);
+			MongoClient client = new(settings.ConnectionString);
 			this.database = client.GetDatabase(settings.DatabaseName);
 			this.CollectionName = settings.NaturalDNASequences_CollectionName;
 

@@ -13,12 +13,10 @@ namespace Backend.Authorization
 	public class JWTMiddleware
 	{
 		private readonly RequestDelegate _next;
-		private readonly AppSettings _appSettings;
 
-		public JWTMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
+		public JWTMiddleware(RequestDelegate next)
 		{
 			this._next = next;
-			this._appSettings = appSettings.Value;
 		}
 
 		public async Task Invoke(HttpContext context, IUserService userService, IJWTUtils jwtUtils)

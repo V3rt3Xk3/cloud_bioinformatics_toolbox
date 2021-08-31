@@ -37,10 +37,11 @@ namespace Backend.Helpers
 
 		private static int GetStatusCodeFromException(Exception _error)
 		{
+			// FIXME: I tried something unfamiliar, this needs testing.
 			return _error switch
 			{
-				AppException e => (int)HttpStatusCode.BadRequest,
-				KeyNotFoundException e => (int)HttpStatusCode.NotFound,
+				AppException => (int)HttpStatusCode.BadRequest,
+				KeyNotFoundException => (int)HttpStatusCode.NotFound,
 				_ => (int)HttpStatusCode.InternalServerError,
 			};
 		}

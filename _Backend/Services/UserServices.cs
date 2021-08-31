@@ -23,7 +23,7 @@ namespace Backend.Services
 		private readonly IMongoCollection<UserEntity> _userEntity;
 		private readonly IMongoDatabase database;
 		public string CollectionName { get; }
-		private IJWTUtils _jwtUtils;
+		private readonly IJWTUtils _jwtUtils;
 		private readonly AppSettings _appSettings;
 		private readonly IMapper _mapper;
 
@@ -182,7 +182,8 @@ namespace Backend.Services
 			// FIXME: This update filter checks for an AND relationship betwen active and obsolete refresh tokens
 			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.PullFilter((_document) => _document.RefreshTokens,
 					(_field) => (_field.Revoked != null) &&
-								(_field.Expires <= DateTime.UtcNow));
+								(_field.Expires <= DateTime.UtcNow) &&
+								(_field.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow));
 
 			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });
 			return;
