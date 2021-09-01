@@ -1,4 +1,4 @@
-# Cloud_Bioinformatics_Toolbox Docs
+# Cloud_Bioinformatics_Toolbox Vulnerabilities
 
 ## BackEnd API Known vulnerabilities
 
