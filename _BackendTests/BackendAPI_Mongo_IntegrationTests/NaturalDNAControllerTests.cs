@@ -6,10 +6,7 @@ using Newtonsoft.Json.Linq;
 
 using Xunit;
 using Xunit.Extensions.Ordering;
-using Newtonsoft.Json;
-using MongoDB.Driver;
 
-using Backend.Models;
 
 using BackendTests.Utilities;
 
@@ -29,7 +26,7 @@ namespace BackendTests
 			ITestSuite.MongoDBCleanUp();
 
 			// Arrange
-			System.Net.Http.HttpClient client = _factory.CreateClient();
+			HttpClient client = _factory.CreateClient();
 
 			// Act
 			HttpResponseMessage response = await client.GetAsync("/api/naturalDNA");
