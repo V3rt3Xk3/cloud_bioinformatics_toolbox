@@ -7,6 +7,7 @@
 ### NaturalDNA Sequences API
 
 * https://localhost:5001/api/naturaldna \
+* https://localhost:5001/api/users \
 
 ## Tutorials
 
