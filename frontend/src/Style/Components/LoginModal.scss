@@ -2,7 +2,7 @@
 
 .modal-body {
 	background-color: $background-color;
-	min-width: 25rem;
+	min-width: $modals-min-width;
 
 	display: block;
 	position: absolute;
