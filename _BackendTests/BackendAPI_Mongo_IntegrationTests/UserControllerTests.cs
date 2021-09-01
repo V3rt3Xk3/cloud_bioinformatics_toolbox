@@ -36,7 +36,7 @@ namespace BackendTests
 		}
 
 		[Fact, Order(1)]
-		public async Task TestSuiteSetUp()
+		public async Task TC0001_TestSuiteSetUp()
 		{
 			// Suite Setup
 			ITestSuite.MongoDBCleanUp(this._mongoClient);
