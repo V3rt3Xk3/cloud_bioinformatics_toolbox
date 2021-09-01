@@ -13,6 +13,7 @@ using BackendTests.Utilities;
 
 namespace BackendTests
 {
+	[Collection("MongoDBIntegrationAPI"), Order(2)]
 	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;

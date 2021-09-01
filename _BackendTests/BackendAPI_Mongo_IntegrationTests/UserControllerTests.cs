@@ -15,6 +15,7 @@ using BackendTests.Utilities;
 
 namespace BackendTests
 {
+	[Collection("MongoDBIntegrationAPI"), Order(1)]
 	public class UserControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
