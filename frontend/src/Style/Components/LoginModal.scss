@@ -16,8 +16,24 @@
 	padding: 1rem;
 }
 
-.modal-body>form>input,
-.modal-body>form>button {
-	display: block;
+.modal-body input,
+.modal-body button {
 	margin-top: 0.5rem;
+	display: flex;
+}
+
+.modal-body input {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.modal-body div {
+	display: inline-block;
+	width: 50%;
+
+	&:last-child button{
+		display: flex;
+		margin-left: auto;
+	}
 }
