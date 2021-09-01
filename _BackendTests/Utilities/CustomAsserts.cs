@@ -27,7 +27,7 @@ namespace BackendTests.Utilities
 		/// <param name="actual">The value to be compared against</param>
 		/// <param name="userMessage">Message to show in the error</param>
 		/// <exception cref="MyEqualException">Thrown when the objects are not equal</exception>
-		public static void Equal<T>(T expected, T actual, string userMessage)
+		public static void Equal<T>(T expected, T actual, string userMessage, bool verbose = false)
 		{
 			bool areEqual;
 
@@ -44,9 +44,19 @@ namespace BackendTests.Utilities
 
 			if (!areEqual)
 			{
-				string stackTraceString = CallerX.AssertX_MethodCaller();
-				userMessage += "\n\n" + stackTraceString;
-				throw new MyEqualException(expected, actual, userMessage);
+				if (!verbose)
+				{
+					string stackTraceString = CallerX.AssertX_MethodCaller();
+					userMessage += "\n\n" + stackTraceString;
+					throw new MyEqualException(expected, actual, userMessage);
+				}
+				else
+				{
+					string stackTraceString = CallerX.StackTrace10Lines();
+					userMessage += "\n\n" + stackTraceString;
+					throw new MyEqualException(expected, actual, userMessage);
+				}
+
 			}
 		}
 	}
@@ -56,11 +66,11 @@ namespace BackendTests.Utilities
 		{
 			return callerMember;
 		}
-		public static string StackTrace5Lines()
+		public static string StackTrace10Lines()
 		{
 			string[] lines = Environment.StackTrace.Split('\n');
 			string output = "First 5 lines of StackTrace \n";
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 10; i++)
 			{
 				output += lines[i] + '\n';
 			}
