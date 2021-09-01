@@ -79,7 +79,7 @@ namespace Backend.Services
 			// Authentication Successful
 			AuthenticateResponse authResponse = new(user, JWTToken, refreshToken.Token);
 
-			// WOW: This looked like the only 
+			// WOW: This looked like the more verbose way to do filtering. 
 			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.Eq("Id", user.Id);
 			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.AddToSet("RefreshTokens", refreshToken);
 			_userEntity.UpdateOne(filter, update);
@@ -98,6 +98,7 @@ namespace Backend.Services
 				// Revoke all descendant tokens in case of this token has been compormised
 				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
 				// NOTE: At this point for me, it seems like the revokeRefreshToken updates the DB.
+				// FIXME: Revoking tokens needs testing.
 				// Refer to: https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens > UserServices.cs
 			}
 
@@ -129,8 +130,8 @@ namespace Backend.Services
 			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
 
 			// Revoke token and save
-			await RevokeRefreshToken(user, refreshToken, ipAddress, "Revoked without replacement!");
 			// NOTE: Again, for me it seems like the DB access is done in the private method.
+			await RevokeRefreshToken(user, refreshToken, ipAddress, "Revoked without replacement!");
 			return;
 		}
 
@@ -150,8 +151,6 @@ namespace Backend.Services
 			return user;
 		}
 
-		// NOTE: Helper functions:
-		// BUG: I might want to rewrite it to check whether result is null.
 		private async Task<UserEntity> DoesUserExistsByUsername(string username)
 		{
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
