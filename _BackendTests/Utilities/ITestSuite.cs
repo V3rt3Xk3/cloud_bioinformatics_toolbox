@@ -12,8 +12,19 @@ namespace BackendTests.Utilities
 {
 	public interface ITestSuite
 	{
+		private static readonly RegisterRequest registerRequest = new()
+		{
+			Username = "vertex",
+			Password = "#33FalleN666#",
+			RePassword = "33FalleN666"
+		};
+		private static readonly AuthenticateRequest authenticateRequest = new()
+		{
+			Username = "vertex",
+			Password = "#33FalleN666#"
+		};
 
-		Task TestSuiteSetUp();
+		Task TC0001_TestSuiteSetUp();
 
 		public static async Task<string> MongoDBRegisterAndAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
 		{
@@ -22,26 +33,30 @@ namespace BackendTests.Utilities
 			HttpResponseMessage response;
 
 			// Register
-			RegisterRequest registerRequest = new()
-			{
-				Username = "vertex",
-				Password = "#33FalleN666#",
-				RePassword = "33FalleN666"
-			};
 			StringContent registerJSONContent = new(JsonConvert.SerializeObject(registerRequest), Encoding.UTF8, "application/json");
 			registerJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
 			response = await client.PostAsync("/api/users/register", registerJSONContent);
 			response.EnsureSuccessStatusCode(); // Status code 200-299
 
 			// Authenticate
-			AuthenticateRequest authenticateRequest = new()
-			{
-				Username = "vertex",
-				Password = "#33FalleN666#"
-			};
 			StringContent authenticateJSONContent = new(JsonConvert.SerializeObject(authenticateRequest), Encoding.UTF8, "application/json");
 			authenticateJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
 			response = await client.PostAsync("/api/users/authenticate", authenticateJSONContent);
+			response.EnsureSuccessStatusCode(); // Status code 200-299
+			string responseString = response.Content.ReadAsStringAsync().Result;
+			JObject jsonResponse = JObject.Parse(responseString);
+			string accessToken = (string)jsonResponse["AccessToken"];
+
+			return accessToken;
+		}
+		public static async Task<string> MongoDBAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
+		{
+			HttpClient client = _factory.CreateClient();
+
+			// Authenticate
+			StringContent authenticateJSONContent = new(JsonConvert.SerializeObject(authenticateRequest), Encoding.UTF8, "application/json");
+			authenticateJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
+			HttpResponseMessage response = await client.PostAsync("/api/users/authenticate", authenticateJSONContent);
 			response.EnsureSuccessStatusCode(); // Status code 200-299
 			string responseString = response.Content.ReadAsStringAsync().Result;
 			JObject jsonResponse = JObject.Parse(responseString);
