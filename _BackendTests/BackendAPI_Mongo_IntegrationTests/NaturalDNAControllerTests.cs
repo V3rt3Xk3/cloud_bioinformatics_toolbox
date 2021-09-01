@@ -13,7 +13,7 @@ using BackendTests.Utilities;
 
 namespace BackendTests
 {
-	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, ITestSuite
+	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		private string _accessToken;
@@ -37,8 +37,8 @@ namespace BackendTests
 		[Fact, Order(1)]
 		public async Task TC0001_TestSuiteSetUp()
 		{
-			ITestSuite.MongoDBCleanUp(_mongoClient);
-			this._accessToken = await ITestSuite.MongoDBRegisterAndAuthenticate(_factory);
+			TestSuiteHelpers.MongoDBCleanUp(_mongoClient);
+			this._accessToken = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(_factory);
 			// Arrange
 			HttpClient client = _factory.CreateClient();
 
@@ -61,7 +61,7 @@ namespace BackendTests
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
-			this._accessToken = await ITestSuite.MongoDBAuthenticate(_factory);
+			this._accessToken = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 
 			// Act
 			HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
@@ -81,7 +81,7 @@ namespace BackendTests
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
-			this._accessToken = await ITestSuite.MongoDBAuthenticate(_factory);
+			this._accessToken = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 
 			string json2POST = NaturalDNA_TestUtilities.LoadTestData_SingleEntity();
 			StringContent jsonContent = new(json2POST, Encoding.UTF8, "application/json");
@@ -100,14 +100,14 @@ namespace BackendTests
 			string errorMessage = "The inserted Sequence document had a different \"sequenceName\" than \"Test 1\"";
 			AssertX.Equal("Sus scrofa breed Landrace oxytocin gene", jsonResponse["sequenceName"], errorMessage);
 
-			ITestSuite.MongoDBCollectionCleanup<NaturalDNASequenceEntity>(_mongoClient, _naturalDNACollectionName);
+			TestSuiteHelpers.MongoDBCollectionCleanup<NaturalDNASequenceEntity>(_mongoClient, _naturalDNACollectionName);
 		}
 		[Fact, Order(4)]
 		public async Task TC0004_CheckingFor_MultipleInsertingOne()
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
-			this._accessToken = await ITestSuite.MongoDBAuthenticate(_factory);
+			this._accessToken = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 			HttpRequestMessage requestMessage;
 
 			// I happend to know that the TC JSON has only 3 entries.
@@ -133,7 +133,7 @@ namespace BackendTests
 			string errorMessage = "There are a different number of entries in the DB than 3!";
 			AssertX.Equal(3, jsonArray.Count, errorMessage);
 
-			ITestSuite.MongoDBCollectionCleanup<NaturalDNASequenceEntity>(_mongoClient, _naturalDNACollectionName);
+			TestSuiteHelpers.MongoDBCollectionCleanup<NaturalDNASequenceEntity>(_mongoClient, _naturalDNACollectionName);
 		}
 	}
 }

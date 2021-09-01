@@ -15,7 +15,7 @@ using BackendTests.Utilities;
 
 namespace BackendTests
 {
-	public class UserControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, ITestSuite
+	public class UserControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		private MongoClient _mongoClient;
@@ -39,8 +39,8 @@ namespace BackendTests
 		public async Task TC0001_TestSuiteSetUp()
 		{
 			// Suite Setup
-			ITestSuite.MongoDBCleanUp(this._mongoClient);
-			this._accessToken = await ITestSuite.MongoDBRegisterAndAuthenticate(this._factory);
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			this._accessToken = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
 
 			// Arrange
 			HttpClient client = _factory.CreateClient();

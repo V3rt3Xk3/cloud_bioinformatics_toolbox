@@ -10,7 +10,7 @@ using Backend.Models.UserManagement;
 
 namespace BackendTests.Utilities
 {
-	public interface ITestSuite
+	public interface TestSuiteHelpers
 	{
 		private static readonly RegisterRequest registerRequest = new()
 		{
@@ -23,8 +23,6 @@ namespace BackendTests.Utilities
 			Username = "vertex",
 			Password = "#33FalleN666#"
 		};
-
-		Task TC0001_TestSuiteSetUp();
 
 		public static async Task<string> MongoDBRegisterAndAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
 		{
