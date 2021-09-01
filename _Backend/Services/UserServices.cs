@@ -45,7 +45,7 @@ namespace Backend.Services
 		public async Task Register(RegisterRequest model)
 		{
 			// Validate
-			if (await this.DoesUserExistsByUsername(model.Username) != null) throw new AppException($"Username '{model.Username}' is already taken!");
+			if (await this.DoesUserExistsByUsername(model.Username)) throw new AppException($"Username '{model.Username}' is already taken!");
 
 			// RegisterRequest mapped to UserEntity
 			UserEntity user = _mapper.Map<UserEntity>(model);
@@ -150,12 +150,16 @@ namespace Backend.Services
 
 			return user;
 		}
-
-		private async Task<UserEntity> DoesUserExistsByUsername(string username)
+		/// <summary>
+		/// <para>This function returns True if user exists and False if not.</para>
+		/// <para>Queries the username against the DB.</para>
+		/// </summary>
+		/// <param name="username">String -> Queryable userName against the DB.</param>
+		/// <returns>True if exists | False if not</returns>
+		private async Task<bool> DoesUserExistsByUsername(string username)
 		{
-			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
-																			user => user.Username == username);
-			return await requestResults.FirstOrDefaultAsync<UserEntity>();
+			IFindFluent<UserEntity, UserEntity> requestResults = _userEntity.Find<UserEntity>((_user) => _user.Username == username).Limit(1);
+			return (await requestResults.FirstOrDefaultAsync<UserEntity>()) != null;
 		}
 
 		private async Task<UserEntity> GetUserByRefreshToken(string token)
