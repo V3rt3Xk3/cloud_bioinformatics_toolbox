@@ -3,7 +3,7 @@
 ## BackEnd API Known vulnerabilities and Possible Counter Measures
 
 ### refreshToken Sniffing
-* So the refresh token might gets sniffed. At this point I am unsure how secure HTTPS really is, so assume it can get sniffed.
+* So the refresh token might gets sniffed. At this point I am unsure how secure HTTPS really is, so assume it can get sniffed. //FIXME: Read on man-in-the-middle attacks - mark if done.
 * **Action**: So if it gets sniffed that will mean that both the **attacker** and the **User** has the same _refreshToken_. To gain access to the **User**'s data, the **attacker** would need to act fast, before a new _refreshToken_ would be issued. This in turn invalidates the **User**'s _refreshToken_.
   * In case, when the HTTPS channels are not broken or could not be broken, then to maintain access to the site, the **attacker** and the **User** would invalidate each others refreshTokens repeatedly. This could be catched. //FIXME: Waiting for implementation - mark if done.
   * Smart **attacker**: She/He could learn the **User**'s application usage patterns, so he would have a peaceful exploration time during the hack. Practically eaves dropping to all the traffic between the _cloud solution_ and the **User**, then she/he would only need to crack the encryption of the last _refreshToken_ exchange.
