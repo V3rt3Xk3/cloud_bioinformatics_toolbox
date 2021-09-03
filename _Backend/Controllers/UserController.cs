@@ -80,7 +80,6 @@ namespace Backend.Controllers
 
 
 		// WOW: Helper methods
-		// BUG: This method needs to be used, so it can be saved.
 		private void SetTokenCookie(string token)
 		{
 			CookieOptions _cookieOptions = new()
