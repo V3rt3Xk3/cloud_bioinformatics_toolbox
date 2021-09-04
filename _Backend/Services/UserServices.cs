@@ -88,15 +88,15 @@ namespace Backend.Services
 			return authResponse;
 		}
 
-		public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
+		public async Task<AuthenticateResponse> RefreshToken(string refreshTokenStringRepresentation, string ipAddress)
 		{
-			UserEntity user = await GetUserByRefreshToken(token);
-			RefreshToken refreshToken = user.RefreshTokens.Single((_token) => _token.Token == token);
+			UserEntity user = await GetUserByRefreshToken(refreshTokenStringRepresentation);
+			RefreshToken refreshToken = user.RefreshTokens.Single((_token) => _token.Token == refreshTokenStringRepresentation);
 
 			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
+				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}");
 				// NOTE: At this point for me, it seems like the revokeRefreshToken updates the DB.
 				// FIXME: Revoking tokens needs testing.
 				// Refer to: https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens > UserServices.cs
