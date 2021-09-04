@@ -16,7 +16,7 @@ namespace Backend.Services
 		/// </summary>
 		/// <param name="model">[AuthenticateRequest] Input JSON like object with Username and Password.</param>
 		/// <param name="ipAddress">[string] IpAddress who requests the action. - It is used for the [RefreshToken]</param>
-		/// <returns></returns>
+		/// <returns>Returns a Task - [AuthenticationResponse] object, containing some: User data, accessToken [JWT] and the newly activated [RefreshToken]</returns>
 		Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress);
 		/// <summary>
 		/// Checks whether the refreshToken fed to it is active or not. If active it returns a new accessToken [JWT] and issues a new [RefreshToken].
@@ -24,7 +24,7 @@ namespace Backend.Services
 		/// </summary>
 		/// <param name="refreshTokenStringRepresentation">[string] String representation of the queryable [RefreshToken]</param>
 		/// <param name="ipAddress">[string] IpAddress who requests the action.</param>
-		/// <returns>Returns an [AuthenticationResponse] object, containing some: User data, accessToken [JWT] and the newly activated [RefreshToken]</returns>
+		/// <returns>Returns a Task - [AuthenticationResponse] object, containing some: User data, accessToken [JWT] and the newly activated [RefreshToken]</returns>
 		Task<AuthenticateResponse> RefreshToken(string refreshTokenStringRepresentation, string ipAddress);
 		/// <summary>
 		/// Revokes a refreshToken. You give it a [string], the [refreshToken.Token] field equivalent and it runs a query against the MongoDB database.
