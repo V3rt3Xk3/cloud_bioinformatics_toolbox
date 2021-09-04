@@ -14,8 +14,24 @@ namespace Backend.Authorization
 {
 	public interface IJWTUtils
 	{
+		/// <summary>
+		/// This function generates an accessToken, which takes the <c>UserEntity</c> input and puts the <c>user.Id</c> as claim into the token.
+		/// </summary>
+		/// <param name="user">UserEntity type</param>
+		/// <returns>[string] String type accessToken (JWT token)</returns>
 		public string GenerateAccessToken(UserEntity user);
+		/// <summary>
+		/// Validates the accessToken (JWTToken) fed as string. Validates the lifecycle, signing key.
+		/// <para>Also retrieves the user.Id from the claims.</para>
+		/// </summary>
+		/// <param name="token">JWT token as [string]</param>
+		/// <returns>user.Id as [string] or null</returns>
 		public string ValidateAccessToken(string token);
+		/// <summary>
+		/// Generates a [RefreshToken] refreshToken and returns it as the class object.
+		/// </summary>
+		/// <param name="ipAddress">[string] IpAddress that asked to generate the token at hand.</param>
+		/// <returns>[RefreshToken]</returns>
 		public RefreshToken GenerateRefreshToken(string ipAddress);
 
 	}
@@ -28,7 +44,6 @@ namespace Backend.Authorization
 		{
 			this._appSettings = appSettings.Value;
 		}
-
 		public string GenerateAccessToken(UserEntity user)
 		{
 			JwtSecurityTokenHandler tokenHandler = new();
@@ -43,7 +58,6 @@ namespace Backend.Authorization
 
 			return tokenHandler.WriteToken(token);
 		}
-
 		public string ValidateAccessToken(string token)
 		{
 			// Returning a null if the token does not exist.
