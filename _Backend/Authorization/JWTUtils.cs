@@ -17,7 +17,7 @@ namespace Backend.Authorization
 		/// <summary>
 		/// This function generates an accessToken, which takes the <c>UserEntity</c> input and puts the <c>user.Id</c> as claim into the token.
 		/// </summary>
-		/// <param name="user">UserEntity type</param>
+		/// <param name="user">UserEntity type. The user that user.Id we want in the token as claim.</param>
 		/// <returns>[string] String type accessToken (JWT token)</returns>
 		public string GenerateAccessToken(UserEntity user);
 		/// <summary>
