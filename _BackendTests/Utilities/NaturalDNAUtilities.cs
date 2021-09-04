@@ -16,7 +16,7 @@ namespace BackendTests.Utilities
 			{
 				string jsonInput = readerAgent.ReadToEnd();
 				JArray jsonArrayParsed = JArray.Parse(jsonInput);
-				singleSequenceDocument = jsonArrayParsed[0].ToString();
+				singleSequenceDocument = jsonArrayParsed[index].ToString();
 			}
 			return singleSequenceDocument;
 		}

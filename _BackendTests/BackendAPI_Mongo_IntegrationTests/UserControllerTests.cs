@@ -13,7 +13,7 @@ using Backend.Models;
 using Backend.Models.UserManagement;
 using BackendTests.Utilities;
 
-namespace BackendTests
+namespace BackendTests.MongoIntegrationTests
 {
 	[Collection("MongoDBIntegrationAPI"), Order(1)]
 	public class UserControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers

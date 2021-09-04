@@ -11,7 +11,7 @@ using Xunit.Extensions.Ordering;
 using Backend.Models;
 using BackendTests.Utilities;
 
-namespace BackendTests
+namespace BackendTests.MongoIntegrationTests
 {
 	[Collection("MongoDBIntegrationAPI"), Order(2)]
 	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
