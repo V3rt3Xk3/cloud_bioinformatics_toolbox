@@ -2,6 +2,7 @@ import React from "react";
 import LoginModal from "./LoginModal";
 import { render } from "@testing-library/react";
 
+// FIXME: Remove repeats of code. I mean particularly the lambdaFunction.
 describe("LoginModal tests", () => {
 	test("Header renders correctly with correct content", () => {
 		const lambdaFunction = () => { };
