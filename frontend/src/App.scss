@@ -1,27 +1,42 @@
 @use "./SharedStyle/ScssVariables.scss" as *;
 
+html {
+  height: 100%;
+}
+
 body {
   font-family: $font-family;
   font-size: $font-size-base;
   color: $text-base-color;
+  height: 100%;
+}
+
+#root {
+  min-height: 100%;
 }
 
 a {
   text-decoration: none;
 }
 
-.App-header {
-  background-color: $background-color;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-}
-
 .App-link {
   color: #61dafb;
 }
 
+.main-container{
+  display: flex;
 
+  aside {
+    background-color: $dev-color-1;
+    width: 20rem;
+  }
+  main {
+    background-color: $dev-color-2;
+    flex: auto;
+    display: flex;
+    width: fill;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+  }
+}
