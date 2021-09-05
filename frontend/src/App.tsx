@@ -7,14 +7,14 @@ import {
 } from "react-router-dom";
 
 import Home from "./Pages/Home";
-import UserProfile from "./Pages/UserProfile"
-import UserRegistration from "./Pages/UserRegistration"
+import UserProfile from "./Pages/UserProfile";
+import UserRegistration from "./Pages/UserRegistration";
 
 // Misc
 import logo from './logo.svg';
-import './Style/Shared/App.scss';
-import "./Style/Shared/TopNavBar.scss";
-import "./Style/Shared/AppLoading.scss";
+import './App.scss';
+import "./SharedStyle/TopNavBar.scss";
+import "./SharedStyle/AppLoading.scss";
 // Login Modal
 import LoginModal from "./Components/LoginModal";
 
@@ -24,7 +24,7 @@ interface IAppProperties {
 
 interface IAppState {
 	loading: boolean,
-	showLoginModal: boolean
+	showLoginModal: boolean;
 }
 
 class App extends React.Component<IAppProperties, IAppState> {
@@ -34,14 +34,14 @@ class App extends React.Component<IAppProperties, IAppState> {
 		this.state = {
 			loading: true,
 			showLoginModal: false
-		}
+		};
 	}
 
 	setShowLoginModal = () => {
 		this.setState({
 			showLoginModal: !this.state.showLoginModal
 		});
-	}
+	};
 
 	componentDidMount() {
 		this.setState({ loading: false });
