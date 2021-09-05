@@ -28,9 +28,22 @@
 	width: 100%;
 }
 
+
+
 .modal-body div {
 	display: inline-block;
 	width: 50%;
+
+	button {
+		padding: 0.1rem 0.5rem;
+		box-shadow: 1px 1px 1px;
+		border: 1px solid $border-color;
+		border-radius: 0.25rem;
+		
+		&:hover {
+			background-color: rgba($color: $button-hover, $alpha: 1);
+		}
+	}
 
 	&:last-child button{
 		display: flex;

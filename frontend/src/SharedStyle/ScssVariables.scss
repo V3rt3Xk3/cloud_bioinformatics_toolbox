@@ -6,13 +6,14 @@ $dev-color-2: #66ff77;
 
 
 // HTML Document General
-$background-color: #fcfcfc;
-$color-background-color: #ffcc66;
-$font-family: "Roboto", sans-serif;
-$font-size-base: 0.925rem;
 $text-base-color: #3c4250;
 $text-dark-color: #252931;
 $text-blue-color: #66f;
+$background-color: #fcfcfc;
+$background-color-gray-1: #dddddd;
+$color-background-color: #ffcc66;
+$font-family: "Roboto", sans-serif;
+$font-size-base: 0.925rem;
 $border-color: $text-dark-color;
 
 // NAVBAR Stuff
@@ -30,3 +31,6 @@ $navbar-link-padding-x: 1rem;
 
 // Modals
 $modals-min-width: 50%;
+
+// Buttons
+$button-hover: $background-color-gray-1;
