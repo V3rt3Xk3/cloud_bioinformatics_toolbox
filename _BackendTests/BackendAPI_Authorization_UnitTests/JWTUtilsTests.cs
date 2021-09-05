@@ -16,9 +16,10 @@ namespace BackendTests.UnitTests
 	public class JWTUtilsTests
 	{
 		private IJWTUtils _jwtUtils;
+		private AppSettings _appSettings;
 		public JWTUtilsTests()
 		{
-			AppSettings _appSettings = new() { Secret = "This is a testing Secret!" };
+			this._appSettings = new() { Secret = "This is a testing Secret!", RefreshTokenExpiresDuration = 7 };
 			IOptions<AppSettings> _appSettingsOptions = Options.Create<AppSettings>(_appSettings);
 
 			this._jwtUtils = new JWTUtils(_appSettingsOptions);
@@ -100,6 +101,22 @@ namespace BackendTests.UnitTests
 			// Assert
 			string errorMessage = "The refreshToken created is out of +-10mins Range.";
 			AssertX.InRange(refreshToken.Created, nowMinus10mins, nowPlus10mins, errorMessage);
+		}
+		[Theory]
+		[InlineData("127.0.0.1")]
+		[InlineData("111.97.231.15")]
+		[InlineData("196.65.125.9")]
+		public void TC0006_GenerateRefreshTokenAndCheckExpiryDateTime(string ipAddress)
+		{
+			// Arange / Act
+			DateTime sevenDaysMinus10mins = DateTime.UtcNow.AddMinutes(-10).AddDays(this._appSettings.RefreshTokenExpiresDuration);
+			DateTime sevenDaysPlus10mins = DateTime.UtcNow.AddMinutes(10).AddDays(this._appSettings.RefreshTokenExpiresDuration);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress);
+
+
+			// Assert
+			string errorMessage = "The refreshToken expiry is out of +7Days(+-10mins) Range.";
+			AssertX.InRange(refreshToken.Expires, sevenDaysMinus10mins, sevenDaysPlus10mins, errorMessage);
 		}
 	}
 }
