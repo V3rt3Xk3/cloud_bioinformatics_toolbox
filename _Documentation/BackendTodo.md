@@ -2,6 +2,8 @@
 
 ## TODO
 
+* Implement Google Oauth2
+  * Make user able to register and login with GMail!
 * Use bcrypt for hashing, both passwords and both accessTokens. //VULN: This could be a vulnerability. Waiting for implementation. - Mark if Done
   * Read on the technology, maybe even on the history of it. //WOW: Read on Bcrypt and other hashing algorithms. - Mark if done!
 * Read on Cross Site Request Forgery. //WOW: Read on it. - Mark if done!
