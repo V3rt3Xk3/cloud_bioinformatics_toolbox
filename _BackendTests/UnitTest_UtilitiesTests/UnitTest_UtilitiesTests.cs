@@ -25,7 +25,7 @@ namespace BackendTests.UnitTestUtilitiesTests
 		[InlineData(13, 1)]
 		[InlineData(17.986, 17.98)]
 		[InlineData("610ed5dcea16532c2368ca8s", "610ed5dcea16532c2368ca8d")]
-		public void TC0002_AssertXENotqualTests<T>(T a, T b)
+		public void TC0002_AssertXNotqualTests<T>(T a, T b)
 		{
 			string errorMessage = "The input 'a' and input 'b' ARE equal!";
 			AssertX.NotEqual(a, b, errorMessage);
