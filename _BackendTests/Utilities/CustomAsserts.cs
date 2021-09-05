@@ -111,18 +111,28 @@ namespace BackendTests.Utilities
 
 			}
 		}
-		public static void InRange<T>(T expected, T low, T high, string userMessage, bool verbose = false) where T : IComparable<T>
+		/// <summary>
+		/// Verifies that two objects are in range of "low" and "high", using a default comparer.
+		/// <para>Needs the Types to be IComparable </para>
+		/// </summary>
+		/// <typeparam name="T">The type of the objects to be compared</typeparam>
+		/// <param name="inputObject">The input object to Assert</param>
+		/// <param name="low">The value to be compared against as lower bound</param>
+		/// <param name="high">The value to be compared against as higher bound</param>
+		/// <param name="userMessage">Message to show in the error</param>
+		/// <exception cref="MyNotInRangeException">Thrown when the inputObject is out of range.</exception>
+		public static void InRange<T>(T inputObject, T low, T high, string userMessage, bool verbose = false) where T : IComparable<T>
 		{
 			bool inRange;
 
-			if (expected == null)
+			if (inputObject == null)
 			{
 				inRange = false;
 			}
 			else
 			{
 				// expected is not null - so safe to call Comparison operators
-				inRange = 0 <= expected.CompareTo(low) && expected.CompareTo(high) <= 0;
+				inRange = 0 <= inputObject.CompareTo(low) && inputObject.CompareTo(high) <= 0;
 			}
 
 			if (!inRange)
@@ -131,13 +141,13 @@ namespace BackendTests.Utilities
 				{
 					string stackTraceString = CallerX.AssertX_MethodCaller();
 					userMessage += "\n\n" + stackTraceString;
-					throw new MyNotInRangeException(expected, low, high, userMessage);
+					throw new MyNotInRangeException(inputObject, low, high, userMessage);
 				}
 				else
 				{
 					string stackTraceString = CallerX.StackTrace10Lines();
 					userMessage += "\n\n" + stackTraceString;
-					throw new MyNotInRangeException(expected, low, high, userMessage);
+					throw new MyNotInRangeException(inputObject, low, high, userMessage);
 				}
 
 			}
