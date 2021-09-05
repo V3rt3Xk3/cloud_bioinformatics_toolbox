@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 // WOW: I have managed to find this beauty from: https://stackoverflow.com/questions/42203169/how-to-implement-xunit-descriptive-assert-message
@@ -9,6 +10,17 @@ namespace BackendTests.Utilities
 	{
 		public MyEqualException(object expected, object actual, string userMessage)
 			: base(expected, actual)
+		{
+			UserMessage = userMessage;
+		}
+
+		public override string Message =>
+			(UserMessage + "\n" + base.Message);
+	}
+	public class MyNotInRangeException : Xunit.Sdk.NotInRangeException
+	{
+		public MyNotInRangeException(object expected, object low, object high, string userMessage)
+			: base(expected, low, high)
 		{
 			UserMessage = userMessage;
 		}
@@ -95,6 +107,37 @@ namespace BackendTests.Utilities
 					string stackTraceString = CallerX.StackTrace10Lines();
 					userMessage += "\n\n" + stackTraceString;
 					throw new MyEqualException(expected, actual, userMessage);
+				}
+
+			}
+		}
+		public static void InRange<T>(T expected, T low, T high, string userMessage, bool verbose = false) where T : IComparable<T>
+		{
+			bool inRange;
+
+			if (expected == null)
+			{
+				inRange = false;
+			}
+			else
+			{
+				// expected is not null - so safe to call Comparison operators
+				inRange = 0 <= expected.CompareTo(low) && expected.CompareTo(high) <= 0;
+			}
+
+			if (!inRange)
+			{
+				if (!verbose)
+				{
+					string stackTraceString = CallerX.AssertX_MethodCaller();
+					userMessage += "\n\n" + stackTraceString;
+					throw new MyNotInRangeException(expected, low, high, userMessage);
+				}
+				else
+				{
+					string stackTraceString = CallerX.StackTrace10Lines();
+					userMessage += "\n\n" + stackTraceString;
+					throw new MyNotInRangeException(expected, low, high, userMessage);
 				}
 
 			}
