@@ -89,24 +89,17 @@ class App extends React.Component<IAppProperties, IAppState> {
 						</div>
 					</nav>
 					<LoginModal show={this.state.showLoginModal} onClose={this.setShowLoginModal} />
-					<div className="main-container">
-						<aside>
-
-						</aside>
-						<main>
-							<Switch>
-								<Route path="/user/profile/">
-									<UserProfile />
-								</Route>
-								<Route path="/user/registration/">
-									<UserRegistration />
-								</Route>
-								<Route path="/">
-									<Home />
-								</Route>
-							</Switch>
-						</main>
-					</div>
+					<Switch>
+						<Route path="/user/profile/">
+							<UserProfile />
+						</Route>
+						<Route path="/user/registration/">
+							<UserRegistration />
+						</Route>
+						<Route path="/">
+							<Home />
+						</Route>
+					</Switch>
 				</Router>
 			);
 		}

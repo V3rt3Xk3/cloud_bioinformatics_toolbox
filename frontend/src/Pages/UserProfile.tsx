@@ -5,8 +5,13 @@ class UserProfile extends React.Component {
 
 	render() {
 		return (
-			<div className="UserProfile" >
-				<h2>UserProfile</h2>
+			<div className="UserProfile main-container" >
+				<aside>
+
+				</aside>
+				<main>
+					<h2>UserProfile</h2>
+				</main>
 			</div >
 		);
 	}
