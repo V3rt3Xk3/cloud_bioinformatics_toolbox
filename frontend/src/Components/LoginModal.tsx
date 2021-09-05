@@ -52,8 +52,7 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 			})
 		};
 		fetch("https://localhost:5001/api/users/authenticate", requestOptions)
-			.then((_response) => _response.json())
-			.then((_data) => console.log(_data));
+			.then((_response) => _response.json());
 
 		this.props.onClose();
 	};
