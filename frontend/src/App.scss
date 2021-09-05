@@ -19,6 +19,33 @@ a {
   text-decoration: none;
 }
 
+button {
+  font-size: 100%;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-block;
+  padding: $navbar-link-padding-y $navbar-link-padding-x;
+	color: $text-dark-color;
+  background: transparent;
+  box-shadow: 0px 0px 0px transparent;
+  border: 0px solid transparent;
+  text-shadow: 0px 0px 0px transparent;
+
+  &:hover {
+    background: transparent;
+    box-shadow: 0px 0px 0px transparent;
+    border: 0px solid transparent;
+    text-shadow: 0px 0px 0px transparent;
+  }
+  &:active {
+    outline: none;
+    border: none;
+  }
+  &:focus, &:focus-visible {
+    outline: 0;
+  }
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -34,7 +61,7 @@ a {
     background-color: $dev-color-2;
     flex: auto;
     display: flex;
-    width: fill;
+    width: stretch;
     align-items: center;
     justify-content: center;
     font-size: calc(10px + 2vmin);

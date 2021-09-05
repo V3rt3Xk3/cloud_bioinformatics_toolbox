@@ -83,7 +83,7 @@ class App extends React.Component<IAppProperties, IAppState> {
 									<Link to="/user/registration/">User registration</Link>
 								</li>
 								<li>
-									<a id="login-modal-trigger" href="#" onClick={_event => { this.setShowLoginModal(); }}>Login</a>
+									<button id="login-modal-trigger" onClick={_event => { this.setShowLoginModal(); }}>Login</button>
 								</li>
 							</ul>
 						</div>
