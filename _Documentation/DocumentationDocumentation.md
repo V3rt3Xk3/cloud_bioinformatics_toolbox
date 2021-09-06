@@ -1,3 +1,3 @@
 # Documentation in general
 
-## Maybe use MKDocs
+## Maybe use GhostDoc
