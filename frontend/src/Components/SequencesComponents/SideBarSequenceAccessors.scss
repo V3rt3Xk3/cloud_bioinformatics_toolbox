@@ -1,0 +1,7 @@
+@use "./../../SharedStyle/ScssVariables.scss" as *;
+
+
+aside {
+    background-color: $dev-color-1;
+    width: 20rem;
+  }
