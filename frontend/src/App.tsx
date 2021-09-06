@@ -8,7 +8,7 @@ import {
 
 import Home from "./Pages/Home";
 import UserProfile from "./Pages/UserProfile";
-import UserRegistration from "./Pages/UserRegistration";
+import Sequences from "./Pages/Sequences";
 
 // Misc
 import logo from './logo.svg';
@@ -80,7 +80,7 @@ class App extends React.Component<IAppProperties, IAppState> {
 									<Link to="/user/profile/">User profile</Link>
 								</li>
 								<li>
-									<Link to="/user/registration/">User registration</Link>
+									<Link to="/sequences/">Sequences</Link>
 								</li>
 								<li>
 									<button id="login-modal-trigger" onClick={_event => { this.setShowLoginModal(); }}>Login</button>
@@ -93,8 +93,8 @@ class App extends React.Component<IAppProperties, IAppState> {
 						<Route path="/user/profile/">
 							<UserProfile />
 						</Route>
-						<Route path="/user/registration/">
-							<UserRegistration />
+						<Route path="/sequences/">
+							<Sequences />
 						</Route>
 						<Route path="/">
 							<Home />

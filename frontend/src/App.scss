@@ -53,10 +53,7 @@ button {
 .main-container{
   display: flex;
 
-  aside {
-    background-color: $dev-color-1;
-    width: 20rem;
-  }
+  
   main {
     background-color: $dev-color-2;
     flex: auto;
