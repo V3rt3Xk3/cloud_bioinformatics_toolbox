@@ -1,4 +1,6 @@
 import React from "react";
+import { Route } from "react-router";
+import { setAccessTokenJWT } from "src/Authentication/AccessToken";
 
 import "./LoginModal.scss";
 
@@ -42,7 +44,9 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 		this.setState(newState);
 	};
 
-	formSubmit = () => {
+	formSubmit = (_event: any) => {
+		// NOTE: the next line prevent page refresh.
+		_event.preventDefault();
 		const requestOptions = {
 			method: "POST",
 			headers: { 'Content-Type': 'application/json' },
@@ -52,10 +56,13 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 			})
 		};
 		fetch("https://localhost:5001/api/users/authenticate", requestOptions)
-			.then((_response) => _response.json());
+			.then((_response) => _response.json())
+			.then((_data) => {
+				setAccessTokenJWT(_data.AccessToken);
+			});
 
-		this.props.onClose();
 	};
+
 
 	render() {
 		if (!this.props.show) {
