@@ -1,3 +1,11 @@
 # Documentation in general
 
-## Maybe use GhostDoc
+## Maybe
+
+### Backend
+
+Doxygen
+
+### Frontend
+
+jsdoc
