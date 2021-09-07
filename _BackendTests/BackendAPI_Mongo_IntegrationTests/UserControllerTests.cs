@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
@@ -20,6 +19,7 @@ namespace BackendTests.MongoIntegrationTests
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		private MongoClient _mongoClient;
+		private string _refreshToken;
 		private string _accessToken;
 		private readonly string _dbName;
 		private readonly string _usersCollectionName;
@@ -37,11 +37,11 @@ namespace BackendTests.MongoIntegrationTests
 		}
 
 		[Fact, Order(1)]
-		public async Task TC0001_TestSuiteSetUp()
+		public async Task TC0001_TestSuiteSetUp_AuthenticationTest()
 		{
 			// Suite Setup
 			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
-			this._accessToken = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
 
 			// Arrange
 			HttpClient client = _factory.CreateClient();
@@ -55,6 +55,30 @@ namespace BackendTests.MongoIntegrationTests
 			// Assert
 			string errorMessage = $"Couldn't get Users. - We got StatusCode {response.StatusCode}";
 			AssertX.Equal(200, (int)response.StatusCode, errorMessage);
+		}
+
+		[Fact, Order(2)]
+		public async Task TC0002_CanRetrieveRefreshToken()
+		{
+			// Suite Setup
+			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
+			HttpClient client = _factory.CreateClient();
+			HttpResponseMessage response;
+
+			string errorMessage = $"RefreshCookie '{this._refreshToken}'";
+			AssertX.NotEqual(null, this._refreshToken, errorMessage);
+
+			// Arrange
+			StringContent registerJSONContent = new(JsonConvert.SerializeObject(""), Encoding.UTF8, "application/json");
+			registerJSONContent.Headers.Add("Cookie", this._refreshToken);
+			registerJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
+			response = await client.PostAsync("/api/users/refresh-token", registerJSONContent);
+			response.EnsureSuccessStatusCode(); // Status code 200-299
+			this._refreshToken = TestSuiteHelpers.ExtractRefreshTokenFromResponseHeader(response);
+
+			// Assert
+			errorMessage = $"RefreshCookie '{this._refreshToken}'";
+			AssertX.NotEqual(null, this._refreshToken, errorMessage);
 		}
 	}
 }

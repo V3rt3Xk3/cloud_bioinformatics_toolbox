@@ -1,4 +1,5 @@
 using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using MongoDB.Driver;
@@ -24,7 +25,7 @@ namespace BackendTests.Utilities
 			Password = "#33FalleN666#"
 		};
 
-		public static async Task<string> MongoDBRegisterAndAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
+		public static async Task<(string, string)> MongoDBRegisterAndAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
@@ -41,14 +42,14 @@ namespace BackendTests.Utilities
 			authenticateJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
 			response = await client.PostAsync("/api/users/authenticate", authenticateJSONContent);
 			response.EnsureSuccessStatusCode(); // Status code 200-299
-			string responseString = response.Content.ReadAsStringAsync().Result;
-			JObject jsonResponse = JObject.Parse(responseString);
-			string accessToken = (string)jsonResponse["AccessToken"];
+			string accessToken = ExtractAccessTokenFromResponseBody(response);
+			string refreshToken = ExtractRefreshTokenFromResponseHeader(response);
 
-			return accessToken;
+			return (refreshToken, accessToken);
 		}
-		public static async Task<string> MongoDBAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
+		public static async Task<(string, string)> MongoDBAuthenticate(CustomWebApplicationFactory<Backend.Startup> _factory)
 		{
+
 			HttpClient client = _factory.CreateClient();
 
 			// Authenticate
@@ -56,11 +57,12 @@ namespace BackendTests.Utilities
 			authenticateJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
 			HttpResponseMessage response = await client.PostAsync("/api/users/authenticate", authenticateJSONContent);
 			response.EnsureSuccessStatusCode(); // Status code 200-299
-			string responseString = response.Content.ReadAsStringAsync().Result;
-			JObject jsonResponse = JObject.Parse(responseString);
-			string accessToken = (string)jsonResponse["AccessToken"];
+			string accessToken = ExtractAccessTokenFromResponseBody(response);
 
-			return accessToken;
+			string refreshToken = ExtractRefreshTokenFromResponseHeader(response);
+
+
+			return (refreshToken, accessToken);
 		}
 
 		/// <summary>
@@ -76,6 +78,32 @@ namespace BackendTests.Utilities
 			IMongoCollection<TClass> userCollection = dataBase.GetCollection<TClass>(_collectionName);
 
 			userCollection.DeleteMany(Builders<TClass>.Filter.Empty);
+		}
+		public static string ExtractRefreshTokenFromResponseHeader(HttpResponseMessage response)
+		{
+			System.Net.Http.Headers.HttpResponseHeaders responseHeaders = response.Headers;
+			string[] settedCookies = (string[])responseHeaders.GetValues("set-cookie");
+
+			string refreshToken = null;
+			int i = 0;
+			while (i < settedCookies.Length)
+			{
+				if (settedCookies[i].Split(';')[0].Split('=')[0] == "refreshToken")
+				{
+					refreshToken += settedCookies[i].Split(';')[0];
+				}
+				i++;
+			}
+
+			return refreshToken;
+		}
+		public static string ExtractAccessTokenFromResponseBody(HttpResponseMessage response)
+		{
+			string responseString = response.Content.ReadAsStringAsync().Result;
+			JObject jsonResponse = JObject.Parse(responseString);
+			string accessToken = (string)jsonResponse["AccessToken"];
+
+			return accessToken;
 		}
 	}
 }
