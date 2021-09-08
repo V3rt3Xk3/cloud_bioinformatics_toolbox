@@ -184,8 +184,8 @@ namespace Backend.Services
 			// Remove old inactive refresh tokens from user based on TTL in app settings
 			// FIXME: This update filter checks for an AND relationship betwen active and obsolete refresh tokens
 			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.PullFilter((_document) => _document.RefreshTokens,
-					(_field) => (_field.Revoked != null) &&
-								(_field.Expires <= DateTime.UtcNow) &&
+					(_field) => ((_field.Revoked != null) ||
+								(_field.Expires <= DateTime.UtcNow)) &&
 								(_field.Created <= DateTime.UtcNow.AddDays(-1 * _appSettings.RefreshTokenTTL)));
 
 			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });

@@ -110,7 +110,7 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.Equal(2, user.RefreshTokens.Count, errorMessage);
 		}
 		[Fact, Order(4)]
-		public async Task TC0004_RegisterThenRotateRefreshToken3TimesAndRemoveSecond()
+		public async Task TC0004_RegisterThenRotateRefreshToken3TimesAndRemoveSecondByRevoke()
 		{
 			// TC Setup
 			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
@@ -119,9 +119,6 @@ namespace BackendTests.MongoIntegrationTests
 			HttpClient client = _factory.CreateClient();
 			UserEntity user;
 
-
-			string errorMessage = $"RefreshCookie '{this._refreshTokenCookie}'";
-			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
 
 			// Arrange
 			await RotateRefreshTokenOnce(client);
@@ -138,7 +135,68 @@ namespace BackendTests.MongoIntegrationTests
 			await RotateRefreshTokenOnce(client);
 			user = await UpdateUserData();
 			// Assert
-			errorMessage = $"There are more than 2 refreshTokens in the DB: {user.RefreshTokens.Count}";
+			string errorMessage = $"There are other than 3 refreshTokens in the DB: {user.RefreshTokens.Count}";
+			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
+			// throw new System.NotImplementedException();
+		}
+		[Fact, Order(5)]
+		public async Task TC0005_RegisterThenRotateRefreshToken3TimesAndRemoveSecondByExpiry()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+			UserEntity user;
+
+
+			// Arrange
+			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client);
+			// Revoking a token and setting the creation time back TTL+1 days.
+			user = await UpdateUserData();
+			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
+			RefreshToken refreshTokenToModify = user.RefreshTokens[1];
+			refreshTokenToModify.Created = DateTime.UtcNow.AddDays(-3);
+			refreshTokenToModify.Expires = DateTime.UtcNow.AddDays(-8);
+			await UpdateRefreshToken(user, refreshTokenToModify);
+
+
+			await RotateRefreshTokenOnce(client);
+			user = await UpdateUserData();
+			// Assert
+			string errorMessage = $"There are other than 3 refreshTokens in the DB: {user.RefreshTokens.Count}";
+			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
+			// throw new System.NotImplementedException();
+		}
+		[Fact, Order(6)]
+		public async Task TC0006_RegisterThenRotateRefreshToken3TimesAndRemoveSecondByExpiryANDRevoking()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+			UserEntity user;
+
+
+			// Arrange
+			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client);
+			// Revoking a token and setting the creation time back TTL+1 days.
+			user = await UpdateUserData();
+			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
+			RefreshToken refreshTokenToModify = user.RefreshTokens[1];
+			refreshTokenToModify.Created = DateTime.UtcNow.AddDays(-3);
+			refreshTokenToModify.Expires = DateTime.UtcNow.AddDays(-8);
+			refreshTokenToModify.Revoked = DateTime.UtcNow;
+			await UpdateRefreshToken(user, refreshTokenToModify);
+
+
+			await RotateRefreshTokenOnce(client);
+			user = await UpdateUserData();
+			// Assert
+			string errorMessage = $"There are other than 3 refreshTokens in the DB: {user.RefreshTokens.Count}";
 			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
 			// throw new System.NotImplementedException();
 		}
