@@ -17,6 +17,17 @@ namespace BackendTests.Utilities
 		public override string Message =>
 			(UserMessage + "\n" + base.Message);
 	}
+	public class MyNotEqualException : Xunit.Sdk.EqualException
+	{
+		public MyNotEqualException(object expected, object actual, string userMessage)
+			: base(expected, actual)
+		{
+			UserMessage = userMessage;
+		}
+
+		public override string Message =>
+			(UserMessage + "\n" + base.Message);
+	}
 	public class MyNotInRangeException : Xunit.Sdk.NotInRangeException
 	{
 		public MyNotInRangeException(object expected, object low, object high, string userMessage)
@@ -100,13 +111,13 @@ namespace BackendTests.Utilities
 				{
 					string stackTraceString = CallerX.AssertX_MethodCaller();
 					userMessage += "\n\n" + stackTraceString;
-					throw new MyEqualException(expected, actual, userMessage);
+					throw new MyNotEqualException(expected, actual, userMessage);
 				}
 				else
 				{
 					string stackTraceString = CallerX.StackTrace10Lines();
 					userMessage += "\n\n" + stackTraceString;
-					throw new MyEqualException(expected, actual, userMessage);
+					throw new MyNotEqualException(expected, actual, userMessage);
 				}
 
 			}

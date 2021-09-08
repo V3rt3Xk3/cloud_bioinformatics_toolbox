@@ -17,7 +17,7 @@ namespace BackendTests.MongoIntegrationTests
 	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
-		private string _refreshToken;
+		private string _refreshTokenCookie;
 		private string _accessToken;
 		private MongoClient _mongoClient;
 		private readonly string _dbName;
@@ -40,7 +40,7 @@ namespace BackendTests.MongoIntegrationTests
 		public async Task TC0001_TestSuiteSetUp()
 		{
 			TestSuiteHelpers.MongoDBCleanUp(_mongoClient);
-			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(_factory);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(_factory);
 			// Arrange
 			HttpClient client = _factory.CreateClient();
 
@@ -63,7 +63,7 @@ namespace BackendTests.MongoIntegrationTests
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
-			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 
 			// Act
 			HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
@@ -83,7 +83,7 @@ namespace BackendTests.MongoIntegrationTests
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
-			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 
 			string json2POST = NaturalDNA_TestUtilities.LoadTestData_SingleEntity();
 			StringContent jsonContent = new(json2POST, Encoding.UTF8, "application/json");
@@ -109,7 +109,7 @@ namespace BackendTests.MongoIntegrationTests
 		{
 			// Arrange
 			HttpClient client = _factory.CreateClient();
-			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 			HttpRequestMessage requestMessage;
 
 			// I happend to know that the TC JSON has only 3 entries.

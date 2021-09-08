@@ -13,13 +13,13 @@ namespace BackendTests.Utilities
 {
 	public interface TestSuiteHelpers
 	{
-		private static readonly RegisterRequest registerRequest = new()
+		public static readonly RegisterRequest registerRequest = new()
 		{
 			Username = "vertex",
 			Password = "#33FalleN666#",
 			RePassword = "33FalleN666"
 		};
-		private static readonly AuthenticateRequest authenticateRequest = new()
+		public static readonly AuthenticateRequest authenticateRequest = new()
 		{
 			Username = "vertex",
 			Password = "#33FalleN666#"
@@ -82,20 +82,21 @@ namespace BackendTests.Utilities
 		public static string ExtractRefreshTokenFromResponseHeader(HttpResponseMessage response)
 		{
 			System.Net.Http.Headers.HttpResponseHeaders responseHeaders = response.Headers;
+
 			string[] settedCookies = (string[])responseHeaders.GetValues("set-cookie");
 
-			string refreshToken = null;
+			string refreshTokenCookie = null;
 			int i = 0;
 			while (i < settedCookies.Length)
 			{
 				if (settedCookies[i].Split(';')[0].Split('=')[0] == "refreshToken")
 				{
-					refreshToken += settedCookies[i].Split(';')[0];
+					refreshTokenCookie += settedCookies[i].Split(';')[0];
 				}
 				i++;
 			}
 
-			return refreshToken;
+			return refreshTokenCookie;
 		}
 		public static string ExtractAccessTokenFromResponseBody(HttpResponseMessage response)
 		{

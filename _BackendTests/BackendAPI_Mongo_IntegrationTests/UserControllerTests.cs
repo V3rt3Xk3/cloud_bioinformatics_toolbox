@@ -1,9 +1,13 @@
+using System;
 using System.Text;
+using System.Web;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MongoDB.Driver;
+
+using System.Linq;
 
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -19,11 +23,12 @@ namespace BackendTests.MongoIntegrationTests
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		private MongoClient _mongoClient;
-		private string _refreshToken;
+		private string _refreshTokenCookie;
 		private string _accessToken;
 		private readonly string _dbName;
 		private readonly string _usersCollectionName;
 		private readonly string _naturalDNACollectionName;
+		private IMongoCollection<UserEntity> _userEntity;
 		public UserControllerTests(CustomWebApplicationFactory<Backend.Startup> factory)
 		{
 			this._factory = factory;
@@ -33,7 +38,7 @@ namespace BackendTests.MongoIntegrationTests
 			this._mongoClient = new(connectionString);
 			this._dbName = "cloud_bioinformatics_test";
 			this._usersCollectionName = "Users";
-			// this._naturalDNACollectionName = "NaturalDNASequences";
+			this._userEntity = this._mongoClient.GetDatabase(this._dbName).GetCollection<UserEntity>(this._usersCollectionName);
 		}
 
 		[Fact, Order(1)]
@@ -41,7 +46,7 @@ namespace BackendTests.MongoIntegrationTests
 		{
 			// Suite Setup
 			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
-			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
 
 			// Arrange
 			HttpClient client = _factory.CreateClient();
@@ -58,27 +63,116 @@ namespace BackendTests.MongoIntegrationTests
 		}
 
 		[Fact, Order(2)]
-		public async Task TC0002_CanRetrieveRefreshToken()
+		public async Task TC0002_CanRetrieveRefreshTokenAndRotate()
 		{
-			// Suite Setup
-			(this._refreshToken, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
+			// TC Setup
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBAuthenticate(_factory);
 			HttpClient client = _factory.CreateClient();
 			HttpResponseMessage response;
 
-			string errorMessage = $"RefreshCookie '{this._refreshToken}'";
-			AssertX.NotEqual(null, this._refreshToken, errorMessage);
+			string errorMessage = $"The refreshCookie seems to be null: '{this._refreshTokenCookie}'";
+			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
 
 			// Arrange
 			StringContent registerJSONContent = new(JsonConvert.SerializeObject(""), Encoding.UTF8, "application/json");
-			registerJSONContent.Headers.Add("Cookie", this._refreshToken);
+			registerJSONContent.Headers.Add("Cookie", this._refreshTokenCookie);
 			registerJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
 			response = await client.PostAsync("/api/users/refresh-token", registerJSONContent);
 			response.EnsureSuccessStatusCode(); // Status code 200-299
-			this._refreshToken = TestSuiteHelpers.ExtractRefreshTokenFromResponseHeader(response);
+			this._refreshTokenCookie = TestSuiteHelpers.ExtractRefreshTokenFromResponseHeader(response);
 
 			// Assert
-			errorMessage = $"RefreshCookie '{this._refreshToken}'";
-			AssertX.NotEqual(null, this._refreshToken, errorMessage);
+			errorMessage = $"The refreshCookie seems to be null: '{this._refreshTokenCookie}'";
+			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
+		}
+		[Fact, Order(3)]
+		public async Task TC0003_RegisterThenRotateRefreshTokenButNotRemove()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+			HttpResponseMessage response;
+
+			string errorMessage = $"RefreshCookie '{this._refreshTokenCookie}'";
+			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
+
+			// Arrange
+			response = await RotateRefreshTokenOnce(client);
+
+			// Assert
+			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
+												(_user) => _user.Username == TestSuiteHelpers.registerRequest.Username);
+			UserEntity user = await requestResults.FirstOrDefaultAsync<UserEntity>();
+
+			errorMessage = $"There are more than 2 refreshTokens in the DB: {user.RefreshTokens.Count}";
+			AssertX.Equal(2, user.RefreshTokens.Count, errorMessage);
+		}
+		[Fact, Order(4)]
+		public async Task TC0004_RegisterThenRotateRefreshToken3TimesAndRemoveSecond()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+			UserEntity user;
+
+
+			string errorMessage = $"RefreshCookie '{this._refreshTokenCookie}'";
+			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
+
+			// Arrange
+			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client);
+			// Revoking a token and setting the creation time back TTL+1 days.
+			user = await UpdateUserData();
+			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
+			RefreshToken refreshTokenToModify = user.RefreshTokens[1];
+			refreshTokenToModify.Created = DateTime.UtcNow.AddDays(-3);
+			refreshTokenToModify.Revoked = DateTime.UtcNow;
+			await UpdateRefreshToken(user, refreshTokenToModify);
+
+
+			await RotateRefreshTokenOnce(client);
+			user = await UpdateUserData();
+			// Assert
+			errorMessage = $"There are more than 2 refreshTokens in the DB: {user.RefreshTokens.Count}";
+			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
+			// throw new System.NotImplementedException();
+		}
+
+		private async Task<HttpResponseMessage> RotateRefreshTokenOnce(HttpClient client)
+		{
+			StringContent registerJSONContent = new(JsonConvert.SerializeObject(""), Encoding.UTF8, "application/json");
+			registerJSONContent.Headers.Add("Cookie", this._refreshTokenCookie);
+			registerJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
+			HttpResponseMessage response = await client.PostAsync("/api/users/refresh-token", registerJSONContent);
+			response.EnsureSuccessStatusCode(); // Status code 200-299
+			this._accessToken = TestSuiteHelpers.ExtractAccessTokenFromResponseBody(response);
+			this._refreshTokenCookie = TestSuiteHelpers.ExtractRefreshTokenFromResponseHeader(response);
+
+			return response;
+		}
+		private async Task UpdateRefreshToken(UserEntity user, RefreshToken token)
+		{
+			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.And(
+																Builders<UserEntity>.Filter.Eq((_user) => _user.Id, user.Id),
+																Builders<UserEntity>.Filter.ElemMatch((_user) => _user.RefreshTokens,
+																										(_field) => _field.Token == token.Token));
+			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.Set((_user) => _user.RefreshTokens[-1], token);
+			await _userEntity.UpdateOneAsync(filter, update);
+
+			return;
+		}
+		private async Task<UserEntity> UpdateUserData()
+		{
+			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
+															(_user) => _user.Username == TestSuiteHelpers.registerRequest.Username);
+			UserEntity user = await requestResults.FirstOrDefaultAsync<UserEntity>();
+
+			return user;
 		}
 	}
 }
