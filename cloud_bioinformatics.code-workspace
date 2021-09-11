@@ -9,7 +9,8 @@
 		"omnisharp.defaultLaunchSolution": "./BackendSource.sln",
 		"omnisharp.enableRoslynAnalyzers": true,
 		"files.exclude": {
-			"**/frontend/node_modules/**/*": true
+			"**/frontend/node_modules/**/*": true,
+			"**/_BackendDocs/**/*": true
 		}
 	}
 }

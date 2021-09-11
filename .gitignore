@@ -21,6 +21,8 @@ package-lock.json
 
 ### BACKEND ###
 
+# Backend Docs - DOXYGEN
+_BackendDocs/**/*
 
 ###################
 # compiled source #
