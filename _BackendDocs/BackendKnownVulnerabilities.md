@@ -1,3 +1,7 @@
+@page Known_Vulnerabilties Known vulnerabilities of the Backend API
+
+@tableofcontents
+
 # Cloud_Bioinformatics_Toolbox Backend Vulnerabilities
 
 ## BackEnd API Known vulnerabilities and Possible Counter Measures

@@ -1,4 +1,7 @@
-# Cloud_Bioinformatics_Toolbox Backend Docs
+@page Basic_Documentation Basic Documentation - Mongo+API
+@tableofcontents
+
+# Backend Documentation - MongoDB + some API
 
 ## BackEnd API
 
