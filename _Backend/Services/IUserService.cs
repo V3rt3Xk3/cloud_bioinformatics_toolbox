@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Backend.Models.UserManagement;
 using Backend.Models;
+using Backend.Authorization;
 
 
 namespace Backend.Services
@@ -22,12 +23,13 @@ namespace Backend.Services
 		/// Checks whether the refreshToken fed to it is active or not. If active it returns a new accessToken [JWT] and issues a new [RefreshToken].
 		/// <para>It also removes the old / outdated / non-active / revoked [RefreshToken] RefreshTokens from the MongoDB databse.</para>
 		/// </summary>
+		/// <seealso cref="Backend.Authorization.IJWTUtils.GenerateRefreshToken()">
 		/// <param name="refreshTokenStringRepresentation">[string] String representation of the queryable [RefreshToken]</param>
 		/// <param name="ipAddress">[string] IpAddress who requests the action.</param>
 		/// <returns>Returns a Task - [AuthenticationResponse] object, containing some: User data, accessToken [JWT] and the newly activated [RefreshToken]</returns>
 		Task<AuthenticateResponse> RefreshToken(string refreshTokenStringRepresentation, string ipAddress);
 		/// <summary>
-		/// Revokes a refreshToken. You give it a [string], the [refreshToken.Token] field equivalent and it runs a query against the MongoDB database.
+		/// **Revokes a refreshToken.** You give it a [string], the <c>[refreshToken.Token]</c> field equivalent and it runs a query against the MongoDB database.
 		/// <para>The IpAddress input string serves to mark who was the one revoking the token.</para>
 		/// </summary>
 		/// <param name="token">[string] String representation of the token to be removed.</param>

@@ -10,7 +10,7 @@
 		"omnisharp.enableRoslynAnalyzers": true,
 		"files.exclude": {
 			"**/frontend/node_modules/**/*": true,
-			"**/_BackendDocs/**/*": true
+			"**/_BackendDocsDoxygen/**/*": true
 		}
 	}
 }
