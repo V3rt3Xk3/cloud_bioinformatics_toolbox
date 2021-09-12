@@ -8,6 +8,7 @@ using System.Text;
 using System.Security.Cryptography;
 
 using Backend.Models;
+using Backend.Models.Authentication;
 using Backend.Helpers;
 
 namespace Backend.Authorization

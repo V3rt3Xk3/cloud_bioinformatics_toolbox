@@ -1,10 +1,6 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
-
 using System;
 
-namespace Backend.Models
+namespace Backend.Models.Authentication
 {
 	public class RefreshToken
 	{

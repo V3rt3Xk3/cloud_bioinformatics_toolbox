@@ -3,6 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
+using Backend.Models.Authentication;
+
 namespace Backend.Models
 {
 	public class UserEntity

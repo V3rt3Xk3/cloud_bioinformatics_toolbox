@@ -13,6 +13,7 @@ using MongoDB.Driver;
 
 using Backend.Authorization;
 using Backend.Models;
+using Backend.Models.Authentication;
 using Backend.Models.UserManagement;
 using Backend.Helpers;
 
