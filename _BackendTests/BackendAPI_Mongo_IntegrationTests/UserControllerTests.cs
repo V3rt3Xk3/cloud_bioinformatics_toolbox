@@ -13,13 +13,13 @@ using Xunit;
 using Xunit.Extensions.Ordering;
 
 using Backend.Models;
-using Backend.Models.UserManagement;
+using Backend.Models.Authentication;
 using BackendTests.Utilities;
 
 namespace BackendTests.MongoIntegrationTests
 {
 	[Collection("MongoDBIntegrationAPI"), Order(1)]
-	public class UserControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
+	public class UserControllerTests_Authentication : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		private MongoClient _mongoClient;
@@ -29,7 +29,7 @@ namespace BackendTests.MongoIntegrationTests
 		private readonly string _usersCollectionName;
 		private readonly string _naturalDNACollectionName;
 		private IMongoCollection<UserEntity> _userEntity;
-		public UserControllerTests(CustomWebApplicationFactory<Backend.Startup> factory)
+		public UserControllerTests_Authentication(CustomWebApplicationFactory<Backend.Startup> factory)
 		{
 			this._factory = factory;
 
@@ -200,7 +200,43 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
 			// throw new System.NotImplementedException();
 		}
+		[Fact, Order(7)]
+		public async Task TC0007_RevokeRefreshTokenByReuseOfAncestor_TestAcceptanceOfJWTAccessToken_and_RefreshToken()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
 
+			HttpClient client = _factory.CreateClient();
+
+			// Arrange
+			await RotateRefreshTokenOnce(client);
+			string acestralAccessToken = this._accessToken;
+
+			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client);
+
+			HttpRequestMessage requestMessage = new(HttpMethod.Get, "/api/users");
+			requestMessage.Headers.Add("Authorization", acestralAccessToken);
+			HttpResponseMessage response = await client.SendAsync(requestMessage);
+			string errorMessage = "The server DID accept a BlackListed JWT token!";
+			AssertX.NotEqual(200, (int)response.StatusCode, errorMessage); // Status code is NOT 200;
+
+			// Rotate refresh token
+			StringContent registerJSONContent = new(JsonConvert.SerializeObject(""), Encoding.UTF8, "application/json");
+			registerJSONContent.Headers.Add("Cookie", this._refreshTokenCookie);
+			registerJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
+			response = await client.PostAsync("/api/users/refresh-token", registerJSONContent);
+
+			errorMessage = "The server DID accept a revoked refreshToken!";
+			AssertX.NotEqual(200, (int)response.StatusCode, errorMessage); // Status code is NOT 200;
+		}
+		/// <summary>
+		/// This helper method Rotates the refreshToken, using the UserServices. Minor issue is that 
+		/// it uses the this._refreshCookie variable available from the class.
+		/// </summary>
+		/// <param name="client"></param>
+		/// <returns>Returns the response from the refresh-token endpoint.</returns>
 		private async Task<HttpResponseMessage> RotateRefreshTokenOnce(HttpClient client)
 		{
 			StringContent registerJSONContent = new(JsonConvert.SerializeObject(""), Encoding.UTF8, "application/json");

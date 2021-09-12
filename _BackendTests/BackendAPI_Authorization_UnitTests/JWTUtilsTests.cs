@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 
 using Backend.Authorization;
 using Backend.Models;
+using Backend.Models.Authentication;
 using Backend.Helpers;
 
 using Xunit;
