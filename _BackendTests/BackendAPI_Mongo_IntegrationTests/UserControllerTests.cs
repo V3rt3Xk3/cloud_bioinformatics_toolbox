@@ -40,7 +40,10 @@ namespace BackendTests.MongoIntegrationTests
 			this._usersCollectionName = "Users";
 			this._userEntity = this._mongoClient.GetDatabase(this._dbName).GetCollection<UserEntity>(this._usersCollectionName);
 		}
-
+		/// <summary>
+		/// This TC tests, whether we can register a user and log in with her / him.
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(1)]
 		public async Task TC0001_TestSuiteSetUp_AuthenticationTest()
 		{
@@ -61,7 +64,10 @@ namespace BackendTests.MongoIntegrationTests
 			string errorMessage = $"Couldn't get Users. - We got StatusCode {response.StatusCode}";
 			AssertX.Equal(200, (int)response.StatusCode, errorMessage);
 		}
-
+		/// <summary>
+		/// This TC tests if we can retrieve a refresh cookie and rotate the refreshToken with it!?
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(2)]
 		public async Task TC0002_CanRetrieveRefreshTokenAndRotate()
 		{
@@ -85,6 +91,10 @@ namespace BackendTests.MongoIntegrationTests
 			errorMessage = $"The refreshCookie seems to be null: '{this._refreshTokenCookie}'";
 			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
 		}
+		/// <summary>
+		/// This TC tests whether we can rotate the refreshTokens without removing them from the DB.
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(3)]
 		public async Task TC0003_RegisterThenRotateRefreshTokenButNotRemove()
 		{
@@ -109,6 +119,11 @@ namespace BackendTests.MongoIntegrationTests
 			errorMessage = $"There are more than 2 refreshTokens in the DB: {user.RefreshTokens.Count}";
 			AssertX.Equal(2, user.RefreshTokens.Count, errorMessage);
 		}
+		/// <summary>
+		/// This TC tests whether we can rotate the refreshTokens and remove from the DB via revoking one
+		/// and setting the TTL back 3 days.
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(4)]
 		public async Task TC0004_RegisterThenRotateRefreshToken3TimesAndRemoveSecondByRevoke()
 		{
@@ -139,6 +154,11 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
 			// throw new System.NotImplementedException();
 		}
+		/// <summary>
+		/// This TC tests, whether we can rotate the refreshTokens and remove one via setting the TTL and the Expiry back.
+		/// Beyond the threshold.
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(5)]
 		public async Task TC0005_RegisterThenRotateRefreshToken3TimesAndRemoveSecondByExpiry()
 		{
@@ -155,7 +175,6 @@ namespace BackendTests.MongoIntegrationTests
 			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			// Revoking a token and setting the creation time back TTL+1 days.
 			user = await UpdateUserData();
-			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
 			RefreshToken refreshTokenToModify = user.RefreshTokens[1];
 			refreshTokenToModify.Created = DateTime.UtcNow.AddDays(-3);
 			refreshTokenToModify.Expires = DateTime.UtcNow.AddDays(-8);
@@ -169,6 +188,10 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
 			// throw new System.NotImplementedException();
 		}
+		/// <summary>
+		/// This TC tests, whether the refreshToken we want to remove gets removed via TTL, Expiry and Revoking.
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(6)]
 		public async Task TC0006_RegisterThenRotateRefreshToken3TimesAndRemoveSecondByExpiryANDRevoking()
 		{
@@ -185,7 +208,6 @@ namespace BackendTests.MongoIntegrationTests
 			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			// Revoking a token and setting the creation time back TTL+1 days.
 			user = await UpdateUserData();
-			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
 			RefreshToken refreshTokenToModify = user.RefreshTokens[1];
 			refreshTokenToModify.Created = DateTime.UtcNow.AddDays(-3);
 			refreshTokenToModify.Expires = DateTime.UtcNow.AddDays(-8);
