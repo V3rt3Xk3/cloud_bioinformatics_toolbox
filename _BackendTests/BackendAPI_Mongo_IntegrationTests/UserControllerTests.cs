@@ -200,6 +200,14 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.Equal(3, user.RefreshTokens.Count, errorMessage);
 			// throw new System.NotImplementedException();
 		}
+		/// <summary>
+		/// When a refreshToken is used more than once, being reused for acquiring a new JWT accessToken,
+		/// all the active JWTs should go to being BlackListed.
+		/// 
+		/// <para> This should mean, that access is restricted for the attacker, when User tries to
+		/// renew her/his JWT accessToken.</para>
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(7)]
 		public async Task TC0007_RevokeRefreshTokenByReuseOfAncestor_TestAcceptanceOfJWTAccessToken_and_RefreshToken()
 		{

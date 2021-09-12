@@ -18,12 +18,14 @@ namespace BackendTests.UnitTests
 	{
 		private IJWTUtils _jwtUtils;
 		private AppSettings _appSettings;
+		private string _mockJWT;
 		public JWTUtilsTests()
 		{
 			this._appSettings = new() { Secret = "This is a testing Secret!", RefreshTokenExpiresDuration = 7 };
 			IOptions<AppSettings> _appSettingsOptions = Options.Create<AppSettings>(_appSettings);
 
 			this._jwtUtils = new JWTUtils(_appSettingsOptions);
+			this._mockJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 		}
 
 		[Theory]
@@ -68,7 +70,7 @@ namespace BackendTests.UnitTests
 		public void TC0003_GenerateRefreshToken(string ipAddress)
 		{
 			// Arange / Act
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
 
 			// Assert
 			string errorMessage = "The refreshToken seems to return with a null.";
@@ -81,7 +83,7 @@ namespace BackendTests.UnitTests
 		public void TC0004_GenerateRefreshTokenAndCheckCreatedByIp(string ipAddress)
 		{
 			// Arange / Act
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
 
 			// Assert
 			string errorMessage = "The refreshToken seems to return with a null.";
@@ -96,7 +98,7 @@ namespace BackendTests.UnitTests
 			// Arange / Act
 			DateTime nowMinus10mins = DateTime.UtcNow.AddMinutes(-10);
 			DateTime nowPlus10mins = DateTime.UtcNow.AddMinutes(10);
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
 
 
 			// Assert
@@ -112,7 +114,7 @@ namespace BackendTests.UnitTests
 			// Arange / Act
 			DateTime sevenDaysMinus10mins = DateTime.UtcNow.AddMinutes(-10).AddDays(this._appSettings.RefreshTokenExpiresDuration);
 			DateTime sevenDaysPlus10mins = DateTime.UtcNow.AddMinutes(10).AddDays(this._appSettings.RefreshTokenExpiresDuration);
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
 
 
 			// Assert
