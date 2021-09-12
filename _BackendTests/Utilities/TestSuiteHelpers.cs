@@ -11,7 +11,7 @@ using Backend.Models.UserManagement;
 
 namespace BackendTests.Utilities
 {
-	public interface TestSuiteHelpers
+	public class TestSuiteHelpers
 	{
 		public static readonly RegisterRequest registerRequest = new()
 		{
