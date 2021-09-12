@@ -70,7 +70,12 @@ $dotnet --list-runtimes
 
 ## MongoDB
 MongoShell command line
+
 $mongosh --authenticationDatabase "cloud_bioinformatics" -u "cloud_bioinformaitcs_mongo_dev" -p
+
+$mongosh --authenticationDatabase "admin" -u "cloud_bioinformaitcs_mongo_owner" -p
+
+
 
 * MongoDB server version: 5.0.1
 * Mongosh: 1.0.1
@@ -90,19 +95,23 @@ const mongo_URI: string = "mongodb://" + DB_USER + ":" + DB_PASS + "@localhost:2
 * User= "mongo_admin"
 * Pass= "theUsual"
 * Database= -
+* Authentication Database= "admin"
 
 #### MongoDB DBOwner
 * User= "cloud_bioinformaitcs_mongo_owner"
 * Pass= "#33FalleN666#"
 * Database= "cloud_bioinformatics"
+* Authentication Database= "admin"
 
 #### MongoDB readWrite
 * User= "cloud_bioinformaitcs_mongo_dev"
 * Pass= "#33FalleN666#"
 * Database= "cloud_bioinformatics"
+* Authentication Database= "cloud_bioinformatics"
 
 #### MongoDB readWrite _ TestingDB
 * User= "cloud_bioinformaitcs_mongo_dev"
 * Pass= "#33FalleN666#"
 * Database= "cloud_bioinformatics_test"
 * role: DBOwner
+* Authentication Database= "cloud_bioinformatics_test"
