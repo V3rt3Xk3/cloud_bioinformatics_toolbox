@@ -31,7 +31,7 @@ namespace Backend.Controllers
 		[HttpGet("{id}", Name = "Natural DNA sequence by ID")]
 		public async Task<ActionResult<NaturalDNASequenceEntity>> Get(string id)
 		{
-			bool testParse = ObjectId.TryParse(id, out ObjectId outId);
+			bool testParse = ObjectId.TryParse(id, out ObjectId _);
 
 
 			if (testParse != true)

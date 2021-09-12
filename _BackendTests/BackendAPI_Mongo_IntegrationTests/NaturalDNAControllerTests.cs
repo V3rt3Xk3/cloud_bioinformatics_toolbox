@@ -14,12 +14,12 @@ using BackendTests.Utilities;
 namespace BackendTests.MongoIntegrationTests
 {
 	[Collection("MongoDBIntegrationAPI"), Order(2)]
-	public class NaturalDNAControllerTests : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
+	public class NaturalDNAControllerTests : TestSuiteHelpers, IClassFixture<CustomWebApplicationFactory<Backend.Startup>>
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
 		private string _refreshTokenCookie;
 		private string _accessToken;
-		private MongoClient _mongoClient;
+		private readonly MongoClient _mongoClient;
 		private readonly string _dbName;
 		private readonly string _usersCollectionName;
 		private readonly string _naturalDNACollectionName;

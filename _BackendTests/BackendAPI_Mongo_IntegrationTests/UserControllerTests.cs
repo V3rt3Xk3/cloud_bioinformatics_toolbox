@@ -19,16 +19,16 @@ using BackendTests.Utilities;
 namespace BackendTests.MongoIntegrationTests
 {
 	[Collection("MongoDBIntegrationAPI"), Order(1)]
-	public class UserControllerTests_Authentication : IClassFixture<CustomWebApplicationFactory<Backend.Startup>>, TestSuiteHelpers
+	public class UserControllerTests_Authentication : TestSuiteHelpers, IClassFixture<CustomWebApplicationFactory<Backend.Startup>>
 	{
 		private readonly CustomWebApplicationFactory<Backend.Startup> _factory;
-		private MongoClient _mongoClient;
+		private readonly MongoClient _mongoClient;
 		private string _refreshTokenCookie;
 		private string _accessToken;
 		private readonly string _dbName;
 		private readonly string _usersCollectionName;
 		private readonly string _naturalDNACollectionName;
-		private IMongoCollection<UserEntity> _userEntity;
+		private readonly IMongoCollection<UserEntity> _userEntity;
 		public UserControllerTests_Authentication(CustomWebApplicationFactory<Backend.Startup> factory)
 		{
 			this._factory = factory;

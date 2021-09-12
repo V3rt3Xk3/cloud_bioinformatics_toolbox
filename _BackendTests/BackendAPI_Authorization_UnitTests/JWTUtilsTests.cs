@@ -16,9 +16,9 @@ namespace BackendTests.UnitTests
 	[Collection("JWTUnitTests")]
 	public class JWTUtilsTests
 	{
-		private IJWTUtils _jwtUtils;
-		private AppSettings _appSettings;
-		private string _mockJWTTokenId;
+		private readonly IJWTUtils _jwtUtils;
+		private readonly AppSettings _appSettings;
+		private readonly string _mockJWTTokenId;
 		public JWTUtilsTests()
 		{
 			this._appSettings = new() { Secret = "This is a testing Secret!", RefreshTokenExpiresDuration = 7 };
@@ -39,7 +39,7 @@ namespace BackendTests.UnitTests
 			user.Id = userID;
 
 			// Act
-			(string accessToken, string accessTokenID) = _jwtUtils.GenerateAccessToken(user);
+			(string accessToken, string _) = _jwtUtils.GenerateAccessToken(user);
 
 			// Assert
 			string errorMessage = "The accessToken generated seems to equal Null";
