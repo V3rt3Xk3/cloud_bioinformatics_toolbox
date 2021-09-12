@@ -18,14 +18,14 @@ namespace BackendTests.UnitTests
 	{
 		private IJWTUtils _jwtUtils;
 		private AppSettings _appSettings;
-		private string _mockJWT;
+		private string _mockJWTTokenId;
 		public JWTUtilsTests()
 		{
 			this._appSettings = new() { Secret = "This is a testing Secret!", RefreshTokenExpiresDuration = 7 };
 			IOptions<AppSettings> _appSettingsOptions = Options.Create<AppSettings>(_appSettings);
 
 			this._jwtUtils = new JWTUtils(_appSettingsOptions);
-			this._mockJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+			this._mockJWTTokenId = "Z2JsSa3hhmsVCLOi1zJpoJxOSnUSLAyDDmkV9eJVx6n192eaUEvAYIT/Y+hCZKy9ZNtV3/MUjkRxm7AbsVBVxA==";
 		}
 
 		[Theory]
@@ -39,7 +39,7 @@ namespace BackendTests.UnitTests
 			user.Id = userID;
 
 			// Act
-			string accessToken = _jwtUtils.GenerateAccessToken(user);
+			(string accessToken, string accessTokenID) = _jwtUtils.GenerateAccessToken(user);
 
 			// Assert
 			string errorMessage = "The accessToken generated seems to equal Null";
@@ -56,12 +56,15 @@ namespace BackendTests.UnitTests
 			user.Id = userID;
 
 			// Act
-			string accessToken = _jwtUtils.GenerateAccessToken(user);
-			string validatedUserID = _jwtUtils.ValidateAccessToken(accessToken);
+			(string accessToken, string accessTokenID) = _jwtUtils.GenerateAccessToken(user);
+			(string validatedUserID, string validatedAccessTokenID) = _jwtUtils.ValidateAccessToken(accessToken);
 
 			// Assert
-			string errorMessage = "The accessToken gets validated to a different userID than the input.";
+			string errorMessage;
+			errorMessage = "The accessToken gets validated to a different userID than the input.";
 			AssertX.Equal(userID, validatedUserID, errorMessage);
+			errorMessage = "The accessToken gets validated to a different TokenID than the input.";
+			AssertX.Equal(accessTokenID, validatedAccessTokenID, errorMessage);
 		}
 		[Theory]
 		[InlineData("127.0.0.1")]
@@ -70,7 +73,7 @@ namespace BackendTests.UnitTests
 		public void TC0003_GenerateRefreshToken(string ipAddress)
 		{
 			// Arange / Act
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWTTokenId);
 
 			// Assert
 			string errorMessage = "The refreshToken seems to return with a null.";
@@ -83,7 +86,7 @@ namespace BackendTests.UnitTests
 		public void TC0004_GenerateRefreshTokenAndCheckCreatedByIp(string ipAddress)
 		{
 			// Arange / Act
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWTTokenId);
 
 			// Assert
 			string errorMessage = "The refreshToken seems to return with a null.";
@@ -98,7 +101,7 @@ namespace BackendTests.UnitTests
 			// Arange / Act
 			DateTime nowMinus10mins = DateTime.UtcNow.AddMinutes(-10);
 			DateTime nowPlus10mins = DateTime.UtcNow.AddMinutes(10);
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWTTokenId);
 
 
 			// Assert
@@ -114,7 +117,7 @@ namespace BackendTests.UnitTests
 			// Arange / Act
 			DateTime sevenDaysMinus10mins = DateTime.UtcNow.AddMinutes(-10).AddDays(this._appSettings.RefreshTokenExpiresDuration);
 			DateTime sevenDaysPlus10mins = DateTime.UtcNow.AddMinutes(10).AddDays(this._appSettings.RefreshTokenExpiresDuration);
-			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWT);
+			RefreshToken refreshToken = _jwtUtils.GenerateRefreshToken(ipAddress, this._mockJWTTokenId);
 
 
 			// Assert

@@ -99,7 +99,7 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.NotEqual(null, this._refreshTokenCookie, errorMessage);
 
 			// Arrange
-			response = await RotateRefreshTokenOnce(client);
+			response = await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 
 			// Assert
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
@@ -121,8 +121,8 @@ namespace BackendTests.MongoIntegrationTests
 
 
 			// Arrange
-			await RotateRefreshTokenOnce(client);
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			// Revoking a token and setting the creation time back TTL+1 days.
 			user = await UpdateUserData();
 			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
@@ -132,7 +132,7 @@ namespace BackendTests.MongoIntegrationTests
 			await UpdateRefreshToken(user, refreshTokenToModify);
 
 
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			user = await UpdateUserData();
 			// Assert
 			string errorMessage = $"There are other than 3 refreshTokens in the DB: {user.RefreshTokens.Count}";
@@ -151,8 +151,8 @@ namespace BackendTests.MongoIntegrationTests
 
 
 			// Arrange
-			await RotateRefreshTokenOnce(client);
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			// Revoking a token and setting the creation time back TTL+1 days.
 			user = await UpdateUserData();
 			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
@@ -162,7 +162,7 @@ namespace BackendTests.MongoIntegrationTests
 			await UpdateRefreshToken(user, refreshTokenToModify);
 
 
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			user = await UpdateUserData();
 			// Assert
 			string errorMessage = $"There are other than 3 refreshTokens in the DB: {user.RefreshTokens.Count}";
@@ -181,8 +181,8 @@ namespace BackendTests.MongoIntegrationTests
 
 
 			// Arrange
-			await RotateRefreshTokenOnce(client);
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			// Revoking a token and setting the creation time back TTL+1 days.
 			user = await UpdateUserData();
 			// NOTE: We are revoking the second refreshToken, even though it is already revoked, because it gets replaced.
@@ -193,7 +193,7 @@ namespace BackendTests.MongoIntegrationTests
 			await UpdateRefreshToken(user, refreshTokenToModify);
 
 
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			user = await UpdateUserData();
 			// Assert
 			string errorMessage = $"There are other than 3 refreshTokens in the DB: {user.RefreshTokens.Count}";
@@ -218,14 +218,15 @@ namespace BackendTests.MongoIntegrationTests
 			HttpClient client = _factory.CreateClient();
 
 			// Arrange
-			await RotateRefreshTokenOnce(client);
-			string acestralAccessToken = this._accessToken;
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			string ancestralAccessToken = this._accessToken;
+			string ancestralRefreshCookie = this._refreshTokenCookie;
 
-			await RotateRefreshTokenOnce(client);
-			await RotateRefreshTokenOnce(client);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, ancestralRefreshCookie, true);
 
 			HttpRequestMessage requestMessage = new(HttpMethod.Get, "/api/users");
-			requestMessage.Headers.Add("Authorization", acestralAccessToken);
+			requestMessage.Headers.Add("Authorization", ancestralAccessToken);
 			HttpResponseMessage response = await client.SendAsync(requestMessage);
 			string errorMessage = "The server DID accept a BlackListed JWT token!";
 			AssertX.NotEqual(200, (int)response.StatusCode, errorMessage); // Status code is NOT 200;
@@ -245,15 +246,20 @@ namespace BackendTests.MongoIntegrationTests
 		/// </summary>
 		/// <param name="client"></param>
 		/// <returns>Returns the response from the refresh-token endpoint.</returns>
-		private async Task<HttpResponseMessage> RotateRefreshTokenOnce(HttpClient client)
+		private async Task<HttpResponseMessage> RotateRefreshTokenOnce(HttpClient client, string refreshCookie, bool errorProne = false)
 		{
 			StringContent registerJSONContent = new(JsonConvert.SerializeObject(""), Encoding.UTF8, "application/json");
-			registerJSONContent.Headers.Add("Cookie", this._refreshTokenCookie);
+			registerJSONContent.Headers.Add("Cookie", refreshCookie);
 			registerJSONContent.Headers.Add("X-Forwarded-For", "127.0.0.1");
 			HttpResponseMessage response = await client.PostAsync("/api/users/refresh-token", registerJSONContent);
-			response.EnsureSuccessStatusCode(); // Status code 200-299
-			this._accessToken = TestSuiteHelpers.ExtractAccessTokenFromResponseBody(response);
-			this._refreshTokenCookie = TestSuiteHelpers.ExtractRefreshTokenFromResponseHeader(response);
+
+			// If error prone, that means we might not get back the Cookies or a proper HTTP200 response.
+			if (!errorProne)
+			{
+				response.EnsureSuccessStatusCode(); // Status code 200-299
+				this._accessToken = TestSuiteHelpers.ExtractAccessTokenFromResponseBody(response);
+				this._refreshTokenCookie = TestSuiteHelpers.ExtractRefreshTokenFromResponseHeader(response);
+			}
 
 			return response;
 		}
