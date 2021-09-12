@@ -5,7 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 // Application specific implementations
-using Backend.Helpers;
+using Backend.Models;
+using Backend.Models.Authentication;
 using Backend.Services;
 
 namespace Backend.Authorization
@@ -22,10 +23,15 @@ namespace Backend.Authorization
 		public async Task Invoke(HttpContext context, IUserService userService, IJWTUtils jwtUtils)
 		{
 			string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(' ').Last();
-			string userId = jwtUtils.ValidateAccessToken(token);
+			(string userId, string tokenId) = jwtUtils.ValidateAccessToken(token);
 			if (userId != null)
 			{
-				context.Items["User"] = await userService.GetUserByIdAsync(userId);
+				UserEntity user = await userService.GetUserByIdAsync(userId);
+				if (user.BlackListedJWTs == null) context.Items["User"] = user;
+				else if (user.BlackListedJWTs != null && !user.BlackListedJWTs.Where((_token) => _token.TokenID == tokenId).Any())
+				{
+					context.Items["User"] = user;
+				}
 			}
 			await this._next(context);
 			return;

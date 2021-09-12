@@ -5,6 +5,7 @@ namespace Backend.Models.Authentication
 	public class RefreshToken
 	{
 		public string Token { get; set; }
+		public string IssuedJWTTokenId { get; set; }
 		public DateTime Expires { get; set; }
 		public DateTime Created { get; set; }
 		public string CreatedByIp { get; set; }

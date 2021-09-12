@@ -3,11 +3,11 @@ using BCryptNet = BCrypt.Net.BCrypt;
 
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
@@ -50,6 +50,7 @@ namespace Backend.Services
 
 			// RegisterRequest mapped to UserEntity
 			UserEntity user = _mapper.Map<UserEntity>(model);
+			user.TotalJWTBlackListCount = 0;
 
 			// hashing Password
 			// BUG: we don't test whether the Password and RePassword match. IT SHOULD BE DONE.
@@ -73,12 +74,12 @@ namespace Backend.Services
 			}
 
 
-			string JWTToken = this._jwtUtils.GenerateAccessToken(user);
+			(string JWTAccessToken, string accessTokenID) = this._jwtUtils.GenerateAccessToken(user);
 
-			RefreshToken refreshToken = this._jwtUtils.GenerateRefreshToken(ipAddress);
+			RefreshToken refreshToken = this._jwtUtils.GenerateRefreshToken(ipAddress, accessTokenID);
 
 			// Authentication Successful
-			AuthenticateResponse authResponse = new(user, JWTToken, refreshToken.Token);
+			AuthenticateResponse authResponse = new(user, JWTAccessToken, refreshToken.Token);
 
 			// WOW: This looked like the more verbose way to do filtering. 
 			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.Eq("Id", user.Id);
@@ -97,16 +98,17 @@ namespace Backend.Services
 			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}");
-				// NOTE: At this point for me, it seems like the revokeRefreshToken updates the DB.
-				// FIXME: Revoking tokens needs testing.
-				// Refer to: https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens > UserServices.cs
+				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}", true);
+				await this.BlackListJWTFromRefreshToken(user, refreshToken, ipAddress);
 			}
 
 			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
 
+			// Generate new jwt accessToken
+			(string accessToken, string accessTokenID) = _jwtUtils.GenerateAccessToken(user);
+
 			// Replace old refresh token with a new one (rotate token)
-			RefreshToken newRefreshToken = await RotateRefreshToken(user, refreshToken, ipAddress);
+			RefreshToken newRefreshToken = await RotateRefreshToken(user, refreshToken, ipAddress, accessTokenID);
 
 			// FIXME: Again this DB entry needs testing as well - mark if done.
 			// FIXME: Might as well do a refactoring.
@@ -116,9 +118,6 @@ namespace Backend.Services
 
 			// Remove old tokens
 			await RemoveOldRefreshTokens(user);
-
-			// Generate new jwt accessToken
-			string accessToken = _jwtUtils.GenerateAccessToken(user);
 
 			return new AuthenticateResponse(user, accessToken, newRefreshToken.Token);
 		}
@@ -173,10 +172,10 @@ namespace Backend.Services
 			return user;
 		}
 
-		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress)
+		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress, string issuedJWT)
 		{
-			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress);
-			await RevokeRefreshToken(user, oldRefreshToken, ipAddress, "Replaced by new token!", newToken.Token);
+			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress, issuedJWT);
+			await RevokeRefreshToken(user, oldRefreshToken, ipAddress, "Replaced by new token!", false, newToken.Token);
 			return newToken;
 		}
 
@@ -193,33 +192,55 @@ namespace Backend.Services
 			return;
 		}
 
-		private async Task RevokeDescendantRefreshTokens(RefreshToken refreshToken, UserEntity user, string ipAddress, string reason)
+		private async Task RevokeDescendantRefreshTokens(RefreshToken refreshToken,
+															UserEntity user,
+															string ipAddress,
+															string reason,
+															bool possibleRefreshTokenTheft = false)
 		{
-			// FIXME: This method needs testing.
+			// FIXME: This method needs testing. - mark if DONE
 			// recursively traverse the refresh token chain and ensure all descendants are revoked
 			if (!string.IsNullOrEmpty(refreshToken.ReplacedByToken))
 			{
 				RefreshToken childToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == refreshToken.ReplacedByToken);
-				if (IsTokenActive(childToken)) await RevokeRefreshToken(user, childToken, ipAddress, reason);
+				if (IsTokenActive(childToken)) await RevokeRefreshToken(user,
+																		childToken,
+																		ipAddress,
+																		reason,
+																		possibleRefreshTokenTheft);
 				else await RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
 
 			}
 		}
 		// TODO: This could be a point of optimization as we make a DB entry everytime a token is modified.
-		private async Task RevokeRefreshToken(UserEntity user, RefreshToken token, string ipAddress, string reason = null, string replacedByToken = null)
+		private async Task RevokeRefreshToken(UserEntity user,
+												RefreshToken refreshToken,
+												string ipAddress,
+												string reason = null,
+												bool possibleRefreshTokenTheft = false,
+												string replacedByToken = null)
 		{
-			token.Revoked = DateTime.UtcNow;
-			token.RevokedByIp = ipAddress;
-			token.ReasonsRevoked = reason;
-			token.ReplacedByToken = replacedByToken;
+			FilterDefinition<UserEntity> filter;
+			UpdateDefinition<UserEntity> update;
+
+			refreshToken.Revoked = DateTime.UtcNow;
+			refreshToken.RevokedByIp = ipAddress;
+			refreshToken.ReasonsRevoked = reason;
+			refreshToken.ReplacedByToken = replacedByToken;
 
 			// BUG: This DB query needs explicit testing. - mark if done!
-			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.And(
+			filter = Builders<UserEntity>.Filter.And(
 													Builders<UserEntity>.Filter.Eq((_user) => _user.Id, user.Id),
 													Builders<UserEntity>.Filter.ElemMatch((_user) => _user.RefreshTokens,
-																							(_field) => _field.Token == token.Token));
-			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.Set((_user) => _user.RefreshTokens[-1], token);
+																							(_field) => _field.Token == refreshToken.Token));
+			update = Builders<UserEntity>.Update.Set((_user) => _user.RefreshTokens[-1], refreshToken);
 			await _userEntity.UpdateOneAsync(filter, update);
+
+			if (possibleRefreshTokenTheft)
+			{
+				await this.BlackListJWTFromRefreshToken(user, refreshToken, ipAddress);
+			}
+
 			return;
 		}
 
@@ -227,5 +248,69 @@ namespace Backend.Services
 
 		private static bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
 		private static bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
+		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshToken refreshToken, string ipAddress)
+		{
+			user = await GetUserByIdAsync(user.Id);
+			FilterDefinition<UserEntity> filter;
+			UpdateDefinition<UserEntity> update;
+
+			int blackListedJWTCount = user.TotalJWTBlackListCount + 1;
+
+			IEnumerable<BlackListedJWT> BlackListMatches;
+			BlackListedJWT newBlackListedJWT;
+			bool isItPush = true;
+			if (user.BlackListedJWTs != null)
+			{
+				BlackListMatches = user.BlackListedJWTs.Where((_token) => _token.CorrespondingRefreshToken == refreshToken.Token);
+				if (!BlackListMatches.Any())
+				{
+					newBlackListedJWT = new();
+					newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
+					newBlackListedJWT.AttemptsToReuse = 1;
+					newBlackListedJWT.BlackListedDateTime = DateTime.UtcNow;
+					newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
+					newBlackListedJWT.BlackListedByIp = ipAddress;
+				}
+				else
+				{
+					isItPush = false;
+					newBlackListedJWT = BlackListMatches.First();
+					newBlackListedJWT.AttemptsToReuse += 1;
+				}
+			}
+			else
+			{
+				newBlackListedJWT = new();
+				newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
+				newBlackListedJWT.AttemptsToReuse = 1;
+				newBlackListedJWT.BlackListedDateTime = DateTime.UtcNow;
+				newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
+				newBlackListedJWT.BlackListedByIp = ipAddress;
+			}
+
+			if (isItPush)
+			{
+				filter = Builders<UserEntity>.Filter.Eq("Id", user.Id);
+				update = Builders<UserEntity>.Update.AddToSet("BlackListedJWTs", newBlackListedJWT)
+													.Set("TotalJWTBlackListCount", blackListedJWTCount);
+				_userEntity.UpdateOne(filter, update);
+			}
+			else
+			{
+				filter = Builders<UserEntity>.Filter.Eq("Id", user.Id);
+				update = Builders<UserEntity>.Update.Set("TotalJWTBlackListCount", blackListedJWTCount);
+				_userEntity.UpdateOne(filter, update);
+
+				filter = Builders<UserEntity>.Filter.And(Builders<UserEntity>.Filter.Eq((_user) => _user.Id, user.Id),
+												Builders<UserEntity>.Filter.ElemMatch((_user) => _user.BlackListedJWTs,
+																					(_field) => _field.CorrespondingRefreshToken == refreshToken.Token));
+				update = Builders<UserEntity>.Update.Set((_user) => _user.BlackListedJWTs[-1], newBlackListedJWT);
+				_userEntity.UpdateOne(filter, update);
+			}
+
+
+			// This is an explicit Sync function, because it is high priority.
+
+		}
 	}
 }

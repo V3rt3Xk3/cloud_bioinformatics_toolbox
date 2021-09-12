@@ -23,5 +23,12 @@ namespace Backend.Models
 		[BsonIgnoreIfNull]
 		[JsonIgnore]
 		public List<RefreshToken> RefreshTokens { get; set; }
+
+		[JsonIgnore]
+		public int TotalJWTBlackListCount { get; set; }
+
+		[BsonIgnoreIfNull]
+		[JsonIgnore]
+		public List<BlackListedJWT> BlackListedJWTs { get; set; }
 	}
 }
