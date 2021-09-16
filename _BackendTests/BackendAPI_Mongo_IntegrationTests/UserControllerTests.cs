@@ -350,6 +350,37 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.Equal(user.RefreshTokens[3].Created, user.BlackListedJWTs[2].IssueDateTime, errorMessage);
 		}
 		/// <summary>
+		/// This TC aims to test, that all the BlackListedJWTs are marked with the first ancestor (the first attempted reuse) 
+		/// in the lineage.
+		/// </summary>
+		/// <returns></returns>
+		[Fact, Order(11)]
+		public async Task TC0011_RevokeRefreshTokenByReuseOfAncestor_CheckingTheGroupIdentifier_WhichIsTheOldestRefreshToken()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+
+			// Arrange
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			string ancestralRefreshCookie = this._refreshTokenCookie;
+			Thread.Sleep(500);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			Thread.Sleep(500);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			Thread.Sleep(500);
+			await RotateRefreshTokenOnce(client, ancestralRefreshCookie, true);
+
+			UserEntity user = await UpdateUserData();
+			string errorMessage = "The first refreshToken Creation time doesn't match the corresponding field with the " +
+									"BlackListed JWT's issueTime.";
+			AssertX.Equal(user.RefreshTokens[1].Token, user.BlackListedJWTs[0].FirstAncestor, errorMessage);
+			AssertX.Equal(user.RefreshTokens[1].Token, user.BlackListedJWTs[1].FirstAncestor, errorMessage);
+			AssertX.Equal(user.RefreshTokens[1].Token, user.BlackListedJWTs[2].FirstAncestor, errorMessage);
+		}
+		/// <summary>
 		/// This helper method Rotates the refreshToken, using the UserServices. Minor issue is that 
 		/// it uses the this._refreshCookie variable available from the class.
 		/// </summary>
