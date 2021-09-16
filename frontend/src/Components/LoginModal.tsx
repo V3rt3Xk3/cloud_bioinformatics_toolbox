@@ -77,12 +77,12 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 		} else {
 			return (
 				<div className="modal-body">
-					<h4 data-testid="loginModalHeader">Login</h4>
+					<h4 data-testid="loginModal.header">Login</h4>
 					<form onSubmit={this.formSubmit}>
-						<input type="text" name="userName" className="username form-control" placeholder="Username" value={this.state.userName} onChange={this.handleChange} data-testid="usernameInput" />
-						<input type="password" name="password" className="password form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="passwordInput" />
+						<input type="text" name="userName" className="username form-control" placeholder="Username" value={this.state.userName} onChange={this.handleChange} data-testid="loginModal.usernameInput" />
+						<input type="password" name="password" className="password form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="loginModal.passwordInput" />
 						<div>
-							<button id="login-form-close-trigger" type="submit">Login</button>
+							<button id="login-form-close-trigger" type="submit" data-testid="loginModal.submit">Login</button>
 						</div>
 						<div>
 							<button type="button" onClick={() => { this.onClose(); }}>Close</button>

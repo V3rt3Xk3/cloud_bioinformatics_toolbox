@@ -9,28 +9,28 @@ const emptyFunction = () => { };
 describe("LoginModal Unit tests", () => {
 	test("Header renders correctly with correct content", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const loginHeader = component.getByTestId("loginModalHeader");
+		const loginHeader = component.getByTestId("loginModal.header");
 
 		expect(loginHeader.textContent).toBe("Login");
 	});
 
 	test("Username input has placeholder 'Username'", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("usernameInput");
+		const usernameInputElement = component.getByTestId("loginModal.usernameInput");
 
 		expect(usernameInputElement.getAttribute("placeholder")).toBe("Username");
 	});
 
 	test("Username input has initial value ''", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("usernameInput");
+		const usernameInputElement = component.getByTestId("loginModal.usernameInput");
 
 		expect(usernameInputElement.getAttribute("value")).toBe("");
 	});
 
 	test("Username input element can change its value!", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("usernameInput");
+		const usernameInputElement = component.getByTestId("loginModal.usernameInput");
 
 		expect(usernameInputElement.getAttribute("value")).toBe("");
 
@@ -47,21 +47,21 @@ describe("LoginModal Unit tests", () => {
 
 	test("Password input has placeholder 'Password'", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const passwordInputElement = component.getByTestId("passwordInput");
+		const passwordInputElement = component.getByTestId("loginModal.passwordInput");
 
 		expect(passwordInputElement.getAttribute("placeholder")).toBe("Password");
 	});
 
 	test("Password input has initial value ''", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const passwordInputElement = component.getByTestId("passwordInput");
+		const passwordInputElement = component.getByTestId("loginModal.passwordInput");
 
 		expect(passwordInputElement.getAttribute("value")).toBe("");
 	});
 
 	test("Password input element can change its value!", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const passwordInputElement = component.getByTestId("passwordInput");
+		const passwordInputElement = component.getByTestId("loginModal.passwordInput");
 
 		expect(passwordInputElement.getAttribute("value")).toBe("");
 
