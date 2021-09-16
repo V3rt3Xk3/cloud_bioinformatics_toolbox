@@ -1,7 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import App from "../App";
-import LoginModal from "../Components/LoginModal";
 
 const signUpText = "Register";
 const singInText = "Sign in";
@@ -12,6 +11,29 @@ describe("User registration and authentication", () => {
 	test('Registering in as "vertex"', () => {
 		const component = render(<App />);
 		const registerButton = component.getByText(signUpText);
+
+		fireEvent.click(registerButton);
+
+		const usernameInput = component.getByPlaceholderText("Username");
+		fireEvent.change(usernameInput, {
+			target: {
+				value: "vertex"
+			}
+		});
+		const passwordInput = component.getByPlaceholderText("Password");
+		fireEvent.change(passwordInput, {
+			target: {
+				value: "#33FalleN666#"
+			}
+		});
+		const rePasswordInput = component.getByPlaceholderText("Repeat password");
+		fireEvent.change(rePasswordInput, {
+			target: {
+				value: "#33FalleN666#"
+			}
+		});
+
+		const submitButton = component.getByTestId("registerModal.submit");
 	});
 	test('Logging in as "vertex"', () => {
 		const component = render(<App />);
@@ -19,13 +41,13 @@ describe("User registration and authentication", () => {
 
 		fireEvent.click(loginButton);
 
-		const usernameInput = component.getByTestId("loginModal.usernameInput");
+		const usernameInput = component.getByPlaceholderText("Username");
 		fireEvent.change(usernameInput, {
 			target: {
 				value: "vertex"
 			}
 		});
-		const passwordInput = component.getByTestId("loginModal.passwordInput");
+		const passwordInput = component.getByPlaceholderText("Password");
 		fireEvent.change(passwordInput, {
 			target: {
 				value: "#33FalleN666#"

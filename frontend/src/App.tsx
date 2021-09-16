@@ -16,7 +16,8 @@ import './App.scss';
 import "./SharedStyle/TopNavBar.scss";
 import "./SharedStyle/AppLoading.scss";
 // Login Modal
-import LoginModal from "./Components/LoginModal";
+import LoginModal from "./Components/UserManagement/LoginModal";
+import RegisterModal from './Components/UserManagement/RegisterModal';
 
 interface IAppProperties {
 
@@ -25,6 +26,7 @@ interface IAppProperties {
 interface IAppState {
 	loading: boolean,
 	showLoginModal: boolean;
+	showRegisterModal: boolean;
 }
 
 class App extends React.Component<IAppProperties, IAppState> {
@@ -33,7 +35,8 @@ class App extends React.Component<IAppProperties, IAppState> {
 		super(properties);
 		this.state = {
 			loading: true,
-			showLoginModal: false
+			showLoginModal: false,
+			showRegisterModal: false
 		};
 	}
 
@@ -41,6 +44,13 @@ class App extends React.Component<IAppProperties, IAppState> {
 		this.setState({
 			showLoginModal: !this.state.showLoginModal
 		});
+		if (this.state.showRegisterModal) this.setShowRegisterModal();
+	};
+	setShowRegisterModal = () => {
+		this.setState({
+			showRegisterModal: !this.state.showRegisterModal
+		});
+		if (this.state.showLoginModal) this.setShowLoginModal();
 	};
 
 	componentDidMount() {
@@ -83,7 +93,7 @@ class App extends React.Component<IAppProperties, IAppState> {
 									<Link to="/sequences/">Sequences</Link>
 								</li>
 								<li>
-									<button id="login-modal-trigger" onClick={_event => { return; }}>Register</button>
+									<button id="login-modal-trigger" onClick={_event => { this.setShowRegisterModal(); }}>Register</button>
 								</li>
 								<li>
 									<button id="login-modal-trigger" onClick={_event => { this.setShowLoginModal(); }}>Sign in</button>
@@ -91,6 +101,7 @@ class App extends React.Component<IAppProperties, IAppState> {
 							</ul>
 						</div>
 					</nav>
+					<RegisterModal show={this.state.showRegisterModal} onClose={this.setShowRegisterModal} />
 					<LoginModal show={this.state.showLoginModal} onClose={this.setShowLoginModal} />
 					<Switch>
 						<Route path="/user/profile/">
