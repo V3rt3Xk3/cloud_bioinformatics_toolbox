@@ -98,8 +98,8 @@ namespace Backend.Services
 			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				await this.BlackListJWTFromRefreshToken(user, refreshToken, ipAddress);
-				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}", true);
+				await BlackListJWTFromRefreshToken(user, refreshToken, refreshToken.Token, ipAddress);
+				await RevokeDescendantRefreshTokens(refreshToken, user, refreshToken.Token, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}", true);
 			}
 
 			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
@@ -175,7 +175,7 @@ namespace Backend.Services
 		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress, string issuedJWT)
 		{
 			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress, issuedJWT);
-			await RevokeRefreshToken(user, oldRefreshToken, ipAddress, "Replaced by new token!", false, newToken.Token);
+			await RevokeRefreshToken(user, oldRefreshToken, ipAddress, "Replaced by new token!", false, null, newToken.Token);
 			return newToken;
 		}
 
@@ -194,6 +194,7 @@ namespace Backend.Services
 
 		private async Task RevokeDescendantRefreshTokens(RefreshToken refreshToken,
 															UserEntity user,
+															string firstAncestor,
 															string ipAddress,
 															string reason,
 															bool possibleRefreshTokenTheft = false)
@@ -207,11 +208,12 @@ namespace Backend.Services
 																		childToken,
 																		ipAddress,
 																		reason,
-																		possibleRefreshTokenTheft);
+																		possibleRefreshTokenTheft,
+																		firstAncestor);
 				else
 				{
-					await BlackListJWTFromRefreshToken(user, childToken, ipAddress);
-					await RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason, possibleRefreshTokenTheft);
+					await BlackListJWTFromRefreshToken(user, childToken, firstAncestor, ipAddress);
+					await RevokeDescendantRefreshTokens(childToken, user, firstAncestor, ipAddress, reason, possibleRefreshTokenTheft);
 				}
 			}
 		}
@@ -221,6 +223,7 @@ namespace Backend.Services
 												string ipAddress,
 												string reason = null,
 												bool possibleRefreshTokenTheft = false,
+												string firstAncestor = null,
 												string replacedByToken = null)
 		{
 			FilterDefinition<UserEntity> filter;
@@ -241,7 +244,7 @@ namespace Backend.Services
 
 			if (possibleRefreshTokenTheft)
 			{
-				await this.BlackListJWTFromRefreshToken(user, refreshToken, ipAddress);
+				await BlackListJWTFromRefreshToken(user, refreshToken, firstAncestor, ipAddress);
 			}
 
 			return;
@@ -251,7 +254,7 @@ namespace Backend.Services
 
 		private static bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
 		private static bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
-		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshToken refreshToken, string ipAddress)
+		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshToken refreshToken, string firstAncestor, string ipAddress)
 		{
 			user = await GetUserByIdAsync(user.Id);
 			FilterDefinition<UserEntity> filter;
@@ -269,6 +272,7 @@ namespace Backend.Services
 				{
 					newBlackListedJWT = new();
 					newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
+					newBlackListedJWT.FirstAncestor = firstAncestor;
 					newBlackListedJWT.AttemptsToReuse = 1;
 					newBlackListedJWT.IssueDateTime = refreshToken.Created;
 					newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
@@ -285,6 +289,7 @@ namespace Backend.Services
 			{
 				newBlackListedJWT = new();
 				newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
+				newBlackListedJWT.FirstAncestor = firstAncestor;
 				newBlackListedJWT.AttemptsToReuse = 1;
 				newBlackListedJWT.IssueDateTime = refreshToken.Created;
 				newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
