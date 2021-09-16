@@ -263,6 +263,54 @@ namespace BackendTests.MongoIntegrationTests
 			AssertX.NotEqual(200, (int)response.StatusCode, errorMessage); // Status code is NOT 200;
 		}
 		/// <summary>
+		/// This TC tests the number of BlackListed JWT access tokens in the database to the given user.
+		/// <para>There should be 2, as we try to use the parent of the active refreshToken</para>
+		/// </summary>
+		/// <returns></returns>
+		[Fact, Order(8)]
+		public async Task TC0008_RevokeRefreshTokenByReuseOfAncestor_TestNumberOfBlackListedAccessTokens()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+
+			// Arrange
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			string ancestralRefreshCookie = this._refreshTokenCookie;
+
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, ancestralRefreshCookie, true);
+
+			UserEntity user = await UpdateUserData();
+			string errorMessage = "There are NOT 2 blacklisted JWTs.";
+			AssertX.Equal(2, user.BlackListedJWTs.Count, errorMessage);
+		}
+		[Fact, Order(9)]
+		public async Task TC0009_RevokeRefreshTokenByReuseOfAncestor_5thLevel_TestNumberOfBlackListedAccessTokens()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+
+			// Arrange
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			string ancestralRefreshCookie = this._refreshTokenCookie;
+
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			await RotateRefreshTokenOnce(client, ancestralRefreshCookie, true);
+
+			UserEntity user = await UpdateUserData();
+			string errorMessage = "There are NOT 5 blacklisted JWTs.";
+			AssertX.Equal(5, user.BlackListedJWTs.Count, errorMessage);
+		}
+		/// <summary>
 		/// This helper method Rotates the refreshToken, using the UserServices. Minor issue is that 
 		/// it uses the this._refreshCookie variable available from the class.
 		/// </summary>
