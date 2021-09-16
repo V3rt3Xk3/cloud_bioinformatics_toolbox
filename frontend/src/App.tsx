@@ -18,6 +18,7 @@ import "./SharedStyle/AppLoading.scss";
 // Login Modal
 import LoginModal from "./Components/UserManagement/LoginModal";
 import RegisterModal from './Components/UserManagement/RegisterModal';
+import { stringify } from 'querystring';
 
 interface IAppProperties {
 
@@ -25,6 +26,7 @@ interface IAppProperties {
 
 interface IAppState {
 	loading: boolean,
+	user: string,
 	showLoginModal: boolean;
 	showRegisterModal: boolean;
 }
@@ -35,6 +37,7 @@ class App extends React.Component<IAppProperties, IAppState> {
 		super(properties);
 		this.state = {
 			loading: true,
+			user: "User",
 			showLoginModal: false,
 			showRegisterModal: false
 		};
@@ -82,6 +85,11 @@ class App extends React.Component<IAppProperties, IAppState> {
 				<Router>
 					<nav className="navbar">
 						<div className="navbar-menu">
+							<ul className="navbar-userinfo">
+								<li data-testid="navBar.username">
+									{this.state.user}
+								</li>
+							</ul>
 							<ul className="navbar-nav">
 								<li>
 									<Link to="/">Home</Link>
@@ -93,10 +101,10 @@ class App extends React.Component<IAppProperties, IAppState> {
 									<Link to="/sequences/">Sequences</Link>
 								</li>
 								<li>
-									<button id="login-modal-trigger" onClick={_event => { this.setShowRegisterModal(); }}>Register</button>
+									<button id="registerModalTrigger" onClick={_event => { this.setShowRegisterModal(); }}>Register</button>
 								</li>
 								<li>
-									<button id="login-modal-trigger" onClick={_event => { this.setShowLoginModal(); }}>Sign in</button>
+									<button id="loginModalTrigger" onClick={_event => { this.setShowLoginModal(); }}>Sign in</button>
 								</li>
 							</ul>
 						</div>
