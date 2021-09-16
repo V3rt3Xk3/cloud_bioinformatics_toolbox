@@ -17,7 +17,7 @@ describe("User registration and authentication", () => {
 		const component = render(<App />);
 		const loginButton = component.getByText(singInText);
 
-		fireEvent.click(loginButton, new MouseEvent("click"));
+		fireEvent.click(loginButton);
 
 		const usernameInput = component.getByTestId("loginModal.usernameInput");
 		fireEvent.change(usernameInput, {
