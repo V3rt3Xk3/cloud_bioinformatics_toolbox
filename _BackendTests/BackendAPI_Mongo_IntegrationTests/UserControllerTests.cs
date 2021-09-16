@@ -319,6 +319,8 @@ namespace BackendTests.MongoIntegrationTests
 		}
 		/// <summary>
 		/// This TC tests, whether the BlackListed JWTs have the same issueDate as their refreshToken counterparts in the DB.
+		/// <para>It also tests for the order in which the JWTs get Blacklisted. It should match the issue time (ascending) 
+		/// order the the corresponding refreshTokens</para>
 		/// </summary>
 		/// <returns></returns>
 		[Fact, Order(10)]

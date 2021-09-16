@@ -98,8 +98,8 @@ namespace Backend.Services
 			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}", true);
 				await this.BlackListJWTFromRefreshToken(user, refreshToken, ipAddress);
+				await RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}", true);
 			}
 
 			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
@@ -270,7 +270,7 @@ namespace Backend.Services
 					newBlackListedJWT = new();
 					newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
 					newBlackListedJWT.AttemptsToReuse = 1;
-					newBlackListedJWT.BlackListedDateTime = DateTime.UtcNow;
+					newBlackListedJWT.BlackListedDateTime = refreshToken.Created;
 					newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
 					newBlackListedJWT.BlackListedByIp = ipAddress;
 				}
@@ -286,7 +286,7 @@ namespace Backend.Services
 				newBlackListedJWT = new();
 				newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
 				newBlackListedJWT.AttemptsToReuse = 1;
-				newBlackListedJWT.BlackListedDateTime = DateTime.UtcNow;
+				newBlackListedJWT.BlackListedDateTime = refreshToken.Created;
 				newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
 				newBlackListedJWT.BlackListedByIp = ipAddress;
 			}
