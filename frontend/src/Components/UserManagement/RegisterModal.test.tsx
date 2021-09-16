@@ -73,4 +73,33 @@ describe("LoginModal Unit tests", () => {
 
 		expect(passwordInputElement.getAttribute("value")).toBe("TestPassword");
 	});
+
+	test("Repeat password input has placeholder 'Repeat password'", () => {
+		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
+		const passwordInputElement = component.getByTestId("registerModal.rePasswordInput");
+
+		expect(passwordInputElement.getAttribute("placeholder")).toBe("Repeat password");
+	});
+
+	test("Repeat password input has initial value ''", () => {
+		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
+		const passwordInputElement = component.getByTestId("registerModal.rePasswordInput");
+
+		expect(passwordInputElement.getAttribute("value")).toBe("");
+	});
+
+	test("Repeat password input element can change its value!", () => {
+		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
+		const passwordInputElement = component.getByTestId("registerModal.rePasswordInput");
+
+		expect(passwordInputElement.getAttribute("value")).toBe("");
+
+		fireEvent.change(passwordInputElement, {
+			target: {
+				value: "TestPassword"
+			}
+		});
+
+		expect(passwordInputElement.getAttribute("value")).toBe("TestPassword");
+	});
 });
