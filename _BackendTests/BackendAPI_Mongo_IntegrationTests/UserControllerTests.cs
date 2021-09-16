@@ -287,6 +287,11 @@ namespace BackendTests.MongoIntegrationTests
 			string errorMessage = "There are NOT 2 blacklisted JWTs.";
 			AssertX.Equal(2, user.BlackListedJWTs.Count, errorMessage);
 		}
+		/// <summary>
+		/// This TC tests, that after trying to reuse the 5th level ancestor of the active refreshToken
+		/// we should have 5 entries in the BlacklistedJWTs.
+		/// </summary>
+		/// <returns></returns>
 		[Fact, Order(9)]
 		public async Task TC0009_RevokeRefreshTokenByReuseOfAncestor_5thLevel_TestNumberOfBlackListedAccessTokens()
 		{
