@@ -83,6 +83,9 @@ class App extends React.Component<IAppProperties, IAppState> {
 									<Link to="/sequences/">Sequences</Link>
 								</li>
 								<li>
+									<button id="login-modal-trigger" onClick={_event => { return; }}>Register</button>
+								</li>
+								<li>
 									<button id="login-modal-trigger" onClick={_event => { this.setShowLoginModal(); }}>Sign in</button>
 								</li>
 							</ul>
