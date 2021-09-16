@@ -270,7 +270,7 @@ namespace Backend.Services
 					newBlackListedJWT = new();
 					newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
 					newBlackListedJWT.AttemptsToReuse = 1;
-					newBlackListedJWT.BlackListedDateTime = refreshToken.Created;
+					newBlackListedJWT.IssueDateTime = refreshToken.Created;
 					newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
 					newBlackListedJWT.BlackListedByIp = ipAddress;
 				}
@@ -286,7 +286,7 @@ namespace Backend.Services
 				newBlackListedJWT = new();
 				newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
 				newBlackListedJWT.AttemptsToReuse = 1;
-				newBlackListedJWT.BlackListedDateTime = refreshToken.Created;
+				newBlackListedJWT.IssueDateTime = refreshToken.Created;
 				newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
 				newBlackListedJWT.BlackListedByIp = ipAddress;
 			}

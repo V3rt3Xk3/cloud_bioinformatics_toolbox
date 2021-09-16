@@ -324,7 +324,7 @@ namespace BackendTests.MongoIntegrationTests
 		/// </summary>
 		/// <returns></returns>
 		[Fact, Order(10)]
-		public async Task TC0010_RevokeRefreshTokenByReuseOfAncestor_CheckingRefreshTokenCreationTimeWithBlackListedJWTIssueTime()
+		public async Task TC0010_RevokeRefreshTokenByReuseOfAncestor_CheckingRefreshTokenCreationTimeWithBlackListedJWTIssueDateTime()
 		{
 			// TC Setup
 			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
@@ -345,9 +345,9 @@ namespace BackendTests.MongoIntegrationTests
 			UserEntity user = await UpdateUserData();
 			string errorMessage = "The first refreshToken Creation time doesn't match the corresponding field with the " +
 									"BlackListed JWT's issueTime.";
-			AssertX.Equal(user.RefreshTokens[1].Created, user.BlackListedJWTs[0].BlackListedDateTime, errorMessage);
-			AssertX.Equal(user.RefreshTokens[2].Created, user.BlackListedJWTs[1].BlackListedDateTime, errorMessage);
-			AssertX.Equal(user.RefreshTokens[3].Created, user.BlackListedJWTs[2].BlackListedDateTime, errorMessage);
+			AssertX.Equal(user.RefreshTokens[1].Created, user.BlackListedJWTs[0].IssueDateTime, errorMessage);
+			AssertX.Equal(user.RefreshTokens[2].Created, user.BlackListedJWTs[1].IssueDateTime, errorMessage);
+			AssertX.Equal(user.RefreshTokens[3].Created, user.BlackListedJWTs[2].IssueDateTime, errorMessage);
 		}
 		/// <summary>
 		/// This helper method Rotates the refreshToken, using the UserServices. Minor issue is that 
