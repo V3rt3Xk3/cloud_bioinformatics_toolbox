@@ -208,8 +208,11 @@ namespace Backend.Services
 																		ipAddress,
 																		reason,
 																		possibleRefreshTokenTheft);
-				else await RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
-
+				else
+				{
+					await BlackListJWTFromRefreshToken(user, childToken, ipAddress);
+					await RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason, possibleRefreshTokenTheft);
+				}
 			}
 		}
 		// TODO: This could be a point of optimization as we make a DB entry everytime a token is modified.
