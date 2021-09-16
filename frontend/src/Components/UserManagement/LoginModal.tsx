@@ -82,7 +82,7 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 						<input type="text" name="username" className="username form-control" placeholder="Username" value={this.state.username} onChange={this.handleChange} data-testid="loginModal.usernameInput" />
 						<input type="password" name="password" className="password form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="loginModal.passwordInput" />
 						<div>
-							<button id="login-form-close-trigger" type="submit" onClick={(_event) => { this.formSubmit(_event); }} data-testid="loginModal.submit">Login</button>
+							<button id="login-form-close-trigger" name="submit" type="submit" onClick={(_event) => { this.formSubmit(_event); }} data-testid="loginModal.submit">Login</button>
 						</div>
 						<div>
 							<button type="button" onClick={() => { this.onClose(); }}>Close</button>
