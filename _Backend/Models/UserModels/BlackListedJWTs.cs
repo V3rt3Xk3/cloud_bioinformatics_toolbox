@@ -5,6 +5,7 @@ namespace Backend.Models.Authentication
 	public class BlackListedJWT
 	{
 		public string TokenID { get; set; }
+		public string FirstAncestor { get; set; }
 		public int AttemptsToReuse { get; set; }
 		public DateTime IssueDateTime { get; set; }
 		public string BlackListedByIp { get; set; }
