@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Web;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -172,6 +173,7 @@ namespace BackendTests.MongoIntegrationTests
 
 			// Arrange
 			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+
 			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
 			// Revoking a token and setting the creation time back TTL+1 days.
 			user = await UpdateUserData();
@@ -314,6 +316,36 @@ namespace BackendTests.MongoIntegrationTests
 			UserEntity user = await UpdateUserData();
 			string errorMessage = "There are NOT 5 blacklisted JWTs.";
 			AssertX.Equal(5, user.BlackListedJWTs.Count, errorMessage);
+		}
+		/// <summary>
+		/// This TC tests, whether the BlackListed JWTs have the same issueDate as their refreshToken counterparts in the DB.
+		/// </summary>
+		/// <returns></returns>
+		[Fact, Order(10)]
+		public async Task TC0010_RevokeRefreshTokenByReuseOfAncestor_CheckingRefreshTokenCreationTimeWithBlackListedJWTIssueTime()
+		{
+			// TC Setup
+			TestSuiteHelpers.MongoDBCleanUp(this._mongoClient);
+			(this._refreshTokenCookie, this._accessToken) = await TestSuiteHelpers.MongoDBRegisterAndAuthenticate(this._factory);
+
+			HttpClient client = _factory.CreateClient();
+
+			// Arrange
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			string ancestralRefreshCookie = this._refreshTokenCookie;
+			Thread.Sleep(500);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			Thread.Sleep(500);
+			await RotateRefreshTokenOnce(client, this._refreshTokenCookie);
+			Thread.Sleep(500);
+			await RotateRefreshTokenOnce(client, ancestralRefreshCookie, true);
+
+			UserEntity user = await UpdateUserData();
+			string errorMessage = "The first refreshToken Creation time doesn't match the corresponding field with the " +
+									"BlackListed JWT's issueTime.";
+			AssertX.Equal(user.RefreshTokens[1].Created, user.BlackListedJWTs[0].BlackListedDateTime, errorMessage);
+			AssertX.Equal(user.RefreshTokens[2].Created, user.BlackListedJWTs[1].BlackListedDateTime, errorMessage);
+			AssertX.Equal(user.RefreshTokens[3].Created, user.BlackListedJWTs[2].BlackListedDateTime, errorMessage);
 		}
 		/// <summary>
 		/// This helper method Rotates the refreshToken, using the UserServices. Minor issue is that 
