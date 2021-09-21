@@ -163,7 +163,11 @@ namespace Backend.Services
 			IFindFluent<UserEntity, UserEntity> requestResults = _userEntity.Find<UserEntity>((_user) => _user.Username == username).Limit(1);
 			return (await requestResults.FirstOrDefaultAsync<UserEntity>()) != null;
 		}
-
+		/// <summary>
+		/// This method is responsible to acces the userId corresponding to a given refreshToken
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns>[UserEntity] user</returns>
 		private async Task<UserEntity> GetUserByRefreshToken(string token)
 		{
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
@@ -173,7 +177,14 @@ namespace Backend.Services
 
 			return user;
 		}
-
+		/// <summary>
+		/// This method rotates a refresh token. Practically issues a new refreshToken and a new JWT AccessToken
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="oldRefreshToken"></param>
+		/// <param name="ipAddress"></param>
+		/// <param name="issuedJWT"></param>
+		/// <returns>[RefreshToken] Returns a new refreshToken</returns>
 		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress, string issuedJWT)
 		{
 			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress, issuedJWT);
@@ -182,7 +193,11 @@ namespace Backend.Services
 			await RevokeRefreshToken(user, revokeSettings, "Replaced by new token!", newToken.Token);
 			return newToken;
 		}
-
+		/// <summary>
+		/// Removes old refresh tokens from the given user DB entry.
+		/// </summary>
+		/// <param name="user"></param>
+		/// <returns></returns>
 		private async Task RemoveOldRefreshTokens(UserEntity user)
 		{
 			// Remove old inactive refresh tokens from user based on TTL in app settings
@@ -195,7 +210,14 @@ namespace Backend.Services
 			await _userEntity.UpdateOneAsync((_user) => _user.Id == user.Id, update, new UpdateOptions() { IsUpsert = true });
 			return;
 		}
-
+		/// <summary>
+		/// Revokes the descendant refreshTokens from an origin.
+		/// <para>Be aware, that it is a recursive function.</para>
+		/// </summary>
+		/// <param name="revokeSettings"></param>
+		/// <param name="user"></param>
+		/// <param name="reason"></param>
+		/// <returns></returns>
 		private async Task RevokeDescendantRefreshTokens(RefreshTokenRevokationSettings revokeSettings,
 															UserEntity user,
 															string reason)
@@ -218,6 +240,16 @@ namespace Backend.Services
 			}
 		}
 		// TODO: This could be a point of optimization as we make a DB entry everytime a token is modified.
+		/// <summary>
+		/// This method revokes a refresh token and blacklists the corresponding JWT, if there is 
+		/// a possibility to refreshToken theft. 
+		/// <para>The refreshToken breach possibility is stored in the revokeSettings struct</para>
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="revokeSettings"></param>
+		/// <param name="reason"></param>
+		/// <param name="replacedByToken"></param>
+		/// <returns></returns>
 		private async Task RevokeRefreshToken(UserEntity user,
 												RefreshTokenRevokationSettings revokeSettings,
 												string reason = null,
@@ -253,6 +285,12 @@ namespace Backend.Services
 
 		private static bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
 		private static bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
+		/// <summary>
+		/// Blacklists a JWT corresponding to the given **revokeSettings.RefreshToken**.
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="revokeSettings"></param>
+		/// <returns></returns>
 		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshTokenRevokationSettings revokeSettings)
 		{
 			RefreshToken refreshToken = revokeSettings.RefreshTokenToRemove;
@@ -311,6 +349,9 @@ namespace Backend.Services
 
 		}
 	}
+	/// <summary>
+	/// This is a struct that contains most of the settings needed for revoking a [RefreshToken]
+	/// </summary>
 	public struct RefreshTokenRevokationSettings
 	{
 		public RefreshToken RefreshTokenToRemove { get; set; }
