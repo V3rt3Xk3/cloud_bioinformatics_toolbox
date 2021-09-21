@@ -41,6 +41,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/dom": "^8.5.0",
     "@types/jest": "^27.0.1",
     "@types/react-router-dom": "^5.1.8",
     "sass": "^1.38.0"

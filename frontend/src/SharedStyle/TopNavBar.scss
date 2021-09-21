@@ -1,38 +1,45 @@
-@use "ScssVariables" as *;
+@use "ScssVariables"as *;
 
 .navbar {
-	box-shadow: $navbar-shadow;
-	background-color: $navbar-body-color;
-	padding: $navbar-padding-y $navbar-padding-x;
-	border-bottom: 2px solid $nav-border-color;
+    box-shadow: $navbar-shadow;
+    background-color: $navbar-body-color;
+    padding: $navbar-padding-y $navbar-padding-x;
+    border-bottom: 2px solid $nav-border-color;
 }
 
 // The Right hand side of the nav-bar
 .navbar-menu {
-	display: flex;
-	flex-basis: auto;
-	flex-grow: 1;
-	align-items: center;
+    display: flex;
+    flex-basis: auto;
+    flex-grow: 1;
+    align-items: center;
 }
 
 // ul in the right hand side of the nav-bar
-ul.navbar-nav {
-	list-style: none;
-	margin-left:auto;
-	margin-top: 0;
-	margin-bottom: 0;
-	flex-direction: row;
-	display: flex;
-	padding-left: 0;
-	padding-right: 0;
+ul {
+    list-style: none;
+    margin-top: 0;
+    margin-bottom: 0;
+    flex-direction: row;
+    display: flex;
+    padding-left: 0;
+    padding-right: 0;
 
-	> li {
-		> a {
-			display: inline-block;
-			padding: $navbar-link-padding-y $navbar-link-padding-x;
-			color: $text-dark-color;
-		}
-	}
+    &.navbar-nav {
+        margin-left: auto;
+    }
+
+    &.navbar-userinfo {
+        margin-right: auto;
+    }
+
+    >li {
+        >a {
+            display: inline-block;
+            padding: $navbar-link-padding-y $navbar-link-padding-x;
+            color: $text-dark-color;
+        }
+    }
 }
 
 

@@ -16,7 +16,9 @@ import './App.scss';
 import "./SharedStyle/TopNavBar.scss";
 import "./SharedStyle/AppLoading.scss";
 // Login Modal
-import LoginModal from "./Components/LoginModal";
+import LoginModal from "./Components/UserManagement/LoginModal";
+import RegisterModal from './Components/UserManagement/RegisterModal';
+import { stringify } from 'querystring';
 
 interface IAppProperties {
 
@@ -24,7 +26,9 @@ interface IAppProperties {
 
 interface IAppState {
 	loading: boolean,
+	user: string,
 	showLoginModal: boolean;
+	showRegisterModal: boolean;
 }
 
 class App extends React.Component<IAppProperties, IAppState> {
@@ -33,7 +37,9 @@ class App extends React.Component<IAppProperties, IAppState> {
 		super(properties);
 		this.state = {
 			loading: true,
-			showLoginModal: false
+			user: "User",
+			showLoginModal: false,
+			showRegisterModal: false
 		};
 	}
 
@@ -41,6 +47,13 @@ class App extends React.Component<IAppProperties, IAppState> {
 		this.setState({
 			showLoginModal: !this.state.showLoginModal
 		});
+		if (this.state.showRegisterModal) this.setShowRegisterModal();
+	};
+	setShowRegisterModal = () => {
+		this.setState({
+			showRegisterModal: !this.state.showRegisterModal
+		});
+		if (this.state.showLoginModal) this.setShowLoginModal();
 	};
 
 	componentDidMount() {
@@ -72,6 +85,11 @@ class App extends React.Component<IAppProperties, IAppState> {
 				<Router>
 					<nav className="navbar">
 						<div className="navbar-menu">
+							<ul className="navbar-userinfo">
+								<li data-testid="navBar.username">
+									{this.state.user}
+								</li>
+							</ul>
 							<ul className="navbar-nav">
 								<li>
 									<Link to="/">Home</Link>
@@ -83,11 +101,15 @@ class App extends React.Component<IAppProperties, IAppState> {
 									<Link to="/sequences/">Sequences</Link>
 								</li>
 								<li>
-									<button id="login-modal-trigger" onClick={_event => { this.setShowLoginModal(); }}>Login</button>
+									<button id="registerModalTrigger" onClick={_event => { this.setShowRegisterModal(); }}>Register</button>
+								</li>
+								<li>
+									<button id="loginModalTrigger" onClick={_event => { this.setShowLoginModal(); }}>Sign in</button>
 								</li>
 							</ul>
 						</div>
 					</nav>
+					<RegisterModal show={this.state.showRegisterModal} onClose={this.setShowRegisterModal} />
 					<LoginModal show={this.state.showLoginModal} onClose={this.setShowLoginModal} />
 					<Switch>
 						<Route path="/user/profile/">

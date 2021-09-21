@@ -1,0 +1,52 @@
+@use "./../../SharedStyle/ScssVariables.scss"as *;
+
+.modal-body {
+    background-color: $background-color;
+    min-width: $modals-min-width;
+
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid $border-color;
+}
+
+.modal-body {
+    padding: 1rem;
+}
+
+.modal-body input,
+.modal-body button {
+    margin-top: 0.5rem;
+    display: flex;
+}
+
+.modal-body input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+
+
+.modal-body div {
+    display: inline-block;
+    width: 50%;
+
+    button {
+        padding: 0.1rem 0.5rem;
+        box-shadow: 1px 1px 1px;
+        border: 1px solid $border-color;
+        border-radius: 0.25rem;
+
+        &:hover {
+            background-color: rgba($color: $button-hover, $alpha: 1);
+        }
+    }
+
+    &:last-child button {
+        display: flex;
+        margin-left: auto;
+    }
+}
