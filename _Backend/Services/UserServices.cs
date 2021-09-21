@@ -257,7 +257,6 @@ namespace Backend.Services
 		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshTokenRevokationSettings revokeSettings)
 		{
 			RefreshToken refreshToken = revokeSettings.RefreshTokenToRemove;
-			string firstAncestor = revokeSettings.FirstAncestor;
 			string ipAddress = revokeSettings.IpAddress;
 
 			user = await GetUserByIdAsync(user.Id);
@@ -274,13 +273,7 @@ namespace Backend.Services
 				BlackListMatches = user.BlackListedJWTs.Where((_token) => _token.CorrespondingRefreshToken == refreshToken.Token);
 				if (!BlackListMatches.Any())
 				{
-					newBlackListedJWT = new();
-					newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
-					newBlackListedJWT.FirstAncestor = firstAncestor;
-					newBlackListedJWT.AttemptsToReuse = 1;
-					newBlackListedJWT.IssueDateTime = refreshToken.Created;
-					newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
-					newBlackListedJWT.BlackListedByIp = ipAddress;
+					newBlackListedJWT = new(refreshToken.IssuedJWTTokenId, revokeSettings.FirstAncestor, refreshToken.Created, ipAddress, refreshToken.Token);
 				}
 				else
 				{
@@ -291,13 +284,7 @@ namespace Backend.Services
 			}
 			else
 			{
-				newBlackListedJWT = new();
-				newBlackListedJWT.TokenID = refreshToken.IssuedJWTTokenId;
-				newBlackListedJWT.FirstAncestor = firstAncestor;
-				newBlackListedJWT.AttemptsToReuse = 1;
-				newBlackListedJWT.IssueDateTime = refreshToken.Created;
-				newBlackListedJWT.CorrespondingRefreshToken = refreshToken.Token;
-				newBlackListedJWT.BlackListedByIp = ipAddress;
+				newBlackListedJWT = new(refreshToken.IssuedJWTTokenId, revokeSettings.FirstAncestor, refreshToken.Created, ipAddress, refreshToken.Token);
 			}
 
 			if (isItPush)
