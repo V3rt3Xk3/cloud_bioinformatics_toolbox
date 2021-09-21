@@ -98,8 +98,9 @@ namespace Backend.Services
 			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				await BlackListJWTFromRefreshToken(user, refreshToken, refreshToken.Token, ipAddress);
-				await RevokeDescendantRefreshTokens(refreshToken, user, refreshToken.Token, ipAddress, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}", true);
+				RefreshTokenRevokationSettings revokeSettings = new(refreshToken, ipAddress, refreshToken.Token, true);
+				await BlackListJWTFromRefreshToken(user, revokeSettings);
+				await RevokeDescendantRefreshTokens(revokeSettings, user, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}");
 			}
 
 			if (!IsTokenActive(refreshToken)) throw new AppException("Invalid token");
@@ -131,7 +132,8 @@ namespace Backend.Services
 
 			// Revoke token and save
 			// NOTE: Again, for me it seems like the DB access is done in the private method.
-			await RevokeRefreshToken(user, refreshToken, ipAddress, "Revoked without replacement!");
+			RefreshTokenRevokationSettings revokeSettings = new(refreshToken, ipAddress);
+			await RevokeRefreshToken(user, revokeSettings, "Revoked without replacement!");
 			return;
 		}
 
@@ -175,7 +177,9 @@ namespace Backend.Services
 		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress, string issuedJWT)
 		{
 			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress, issuedJWT);
-			await RevokeRefreshToken(user, oldRefreshToken, ipAddress, "Replaced by new token!", false, null, newToken.Token);
+			RefreshTokenRevokationSettings revokeSettings = new(oldRefreshToken, ipAddress, null, false);
+
+			await RevokeRefreshToken(user, revokeSettings, "Replaced by new token!", newToken.Token);
 			return newToken;
 		}
 
@@ -192,45 +196,41 @@ namespace Backend.Services
 			return;
 		}
 
-		private async Task RevokeDescendantRefreshTokens(RefreshToken refreshToken,
+		private async Task RevokeDescendantRefreshTokens(RefreshTokenRevokationSettings revokeSettings,
 															UserEntity user,
-															string firstAncestor,
-															string ipAddress,
 															string reason,
 															bool possibleRefreshTokenTheft = false)
 		{
+			RefreshToken refreshToken = revokeSettings.RefreshTokenToRemove;
 			// FIXME: This method needs testing. - mark if DONE
 			// recursively traverse the refresh token chain and ensure all descendants are revoked
 			if (!string.IsNullOrEmpty(refreshToken.ReplacedByToken))
 			{
 				RefreshToken childToken = user.RefreshTokens.SingleOrDefault((_token) => _token.Token == refreshToken.ReplacedByToken);
+				revokeSettings.RefreshTokenToRemove = childToken;
 				if (IsTokenActive(childToken)) await RevokeRefreshToken(user,
-																		childToken,
-																		ipAddress,
-																		reason,
-																		possibleRefreshTokenTheft,
-																		firstAncestor);
+																		revokeSettings,
+																		reason);
 				else
 				{
-					await BlackListJWTFromRefreshToken(user, childToken, firstAncestor, ipAddress);
-					await RevokeDescendantRefreshTokens(childToken, user, firstAncestor, ipAddress, reason, possibleRefreshTokenTheft);
+					await BlackListJWTFromRefreshToken(user, revokeSettings);
+					await RevokeDescendantRefreshTokens(revokeSettings, user, reason, possibleRefreshTokenTheft);
 				}
 			}
 		}
 		// TODO: This could be a point of optimization as we make a DB entry everytime a token is modified.
 		private async Task RevokeRefreshToken(UserEntity user,
-												RefreshToken refreshToken,
-												string ipAddress,
+												RefreshTokenRevokationSettings revokeSettings,
 												string reason = null,
-												bool possibleRefreshTokenTheft = false,
-												string firstAncestor = null,
 												string replacedByToken = null)
 		{
+			RefreshToken refreshToken = revokeSettings.RefreshTokenToRemove;
+
 			FilterDefinition<UserEntity> filter;
 			UpdateDefinition<UserEntity> update;
 
 			refreshToken.Revoked = DateTime.UtcNow;
-			refreshToken.RevokedByIp = ipAddress;
+			refreshToken.RevokedByIp = revokeSettings.IpAddress;
 			refreshToken.ReasonsRevoked = reason;
 			refreshToken.ReplacedByToken = replacedByToken;
 
@@ -242,9 +242,9 @@ namespace Backend.Services
 			update = Builders<UserEntity>.Update.Set((_user) => _user.RefreshTokens[-1], refreshToken);
 			await _userEntity.UpdateOneAsync(filter, update);
 
-			if (possibleRefreshTokenTheft)
+			if (revokeSettings.PossibleRefreshTokenTheft)
 			{
-				await BlackListJWTFromRefreshToken(user, refreshToken, firstAncestor, ipAddress);
+				await BlackListJWTFromRefreshToken(user, revokeSettings);
 			}
 
 			return;
@@ -254,8 +254,12 @@ namespace Backend.Services
 
 		private static bool IsTokenRevoked(RefreshToken token) => token.Revoked != null;
 		private static bool IsTokenExpired(RefreshToken token) => (DateTime.UtcNow >= token.Expires);
-		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshToken refreshToken, string firstAncestor, string ipAddress)
+		private async Task BlackListJWTFromRefreshToken(UserEntity user, RefreshTokenRevokationSettings revokeSettings)
 		{
+			RefreshToken refreshToken = revokeSettings.RefreshTokenToRemove;
+			string firstAncestor = revokeSettings.FirstAncestor;
+			string ipAddress = revokeSettings.IpAddress;
+
 			user = await GetUserByIdAsync(user.Id);
 			FilterDefinition<UserEntity> filter;
 			UpdateDefinition<UserEntity> update;
@@ -319,6 +323,21 @@ namespace Backend.Services
 
 			// This is an explicit Sync function, because it is high priority.
 
+		}
+	}
+	public struct RefreshTokenRevokationSettings
+	{
+		public RefreshToken RefreshTokenToRemove { get; set; }
+		public string FirstAncestor { get; }
+		public string IpAddress { get; }
+		public bool PossibleRefreshTokenTheft { get; }
+
+		public RefreshTokenRevokationSettings(RefreshToken refreshToken, string ipAddress, string firstAncestor = null, bool possibleRefreshTokenTheft = false)
+		{
+			this.RefreshTokenToRemove = refreshToken;
+			this.FirstAncestor = firstAncestor;
+			this.IpAddress = ipAddress;
+			this.PossibleRefreshTokenTheft = possibleRefreshTokenTheft;
 		}
 	}
 }
