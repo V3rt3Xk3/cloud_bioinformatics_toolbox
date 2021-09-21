@@ -198,8 +198,7 @@ namespace Backend.Services
 
 		private async Task RevokeDescendantRefreshTokens(RefreshTokenRevokationSettings revokeSettings,
 															UserEntity user,
-															string reason,
-															bool possibleRefreshTokenTheft = false)
+															string reason)
 		{
 			RefreshToken refreshToken = revokeSettings.RefreshTokenToRemove;
 			// FIXME: This method needs testing. - mark if DONE
@@ -214,7 +213,7 @@ namespace Backend.Services
 				else
 				{
 					await BlackListJWTFromRefreshToken(user, revokeSettings);
-					await RevokeDescendantRefreshTokens(revokeSettings, user, reason, possibleRefreshTokenTheft);
+					await RevokeDescendantRefreshTokens(revokeSettings, user, reason);
 				}
 			}
 		}
