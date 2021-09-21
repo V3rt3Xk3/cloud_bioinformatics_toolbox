@@ -153,7 +153,7 @@ namespace Backend.Services
 			return user;
 		}
 		/// <summary>
-		/// <para>This function returns True if user exists and False if not.</para>
+		/// This function returns True if user exists and False if not.
 		/// <para>Queries the username against the DB.</para>
 		/// </summary>
 		/// <param name="username">String -> Queryable userName against the DB.</param>
