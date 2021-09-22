@@ -94,11 +94,12 @@ namespace Backend.Services
 		{
 			UserEntity user = await GetUserByRefreshToken(refreshTokenStringRepresentation);
 			RefreshToken refreshToken = user.RefreshTokens.Single((_token) => _token.Token == refreshTokenStringRepresentation);
+			RefreshTokenRevokationSettings revokeSettings;
 
 			if (IsTokenRevoked(refreshToken))
 			{
 				// Revoke all descendant tokens in case of this token has been compormised
-				RefreshTokenRevokationSettings revokeSettings = new(refreshToken, ipAddress, refreshToken.Token, true);
+				revokeSettings = new RefreshTokenRevokationSettings(refreshToken, ipAddress, refreshToken.Token, true);
 				await BlackListJWTFromRefreshToken(user, revokeSettings);
 				await RevokeDescendantRefreshTokens(revokeSettings, user, $"Attempted reuse of revoked ancestor token: {refreshTokenStringRepresentation}");
 			}
@@ -109,10 +110,9 @@ namespace Backend.Services
 			(string accessToken, string accessTokenID) = _jwtUtils.GenerateAccessToken(user);
 
 			// Replace old refresh token with a new one (rotate token)
-			RefreshToken newRefreshToken = await RotateRefreshToken(user, refreshToken, ipAddress, accessTokenID);
+			revokeSettings = new RefreshTokenRevokationSettings(refreshToken, ipAddress, null, false);
+			RefreshToken newRefreshToken = await RotateRefreshToken(user, revokeSettings, accessTokenID);
 
-			// FIXME: Again this DB entry needs testing as well - mark if done.
-			// FIXME: Might as well do a refactoring.
 			FilterDefinition<UserEntity> filter = Builders<UserEntity>.Filter.Eq((_user) => _user.Id, user.Id);
 			UpdateDefinition<UserEntity> update = Builders<UserEntity>.Update.Push((_user) => _user.RefreshTokens, newRefreshToken);
 			await _userEntity.UpdateOneAsync(filter, update);
@@ -185,10 +185,9 @@ namespace Backend.Services
 		/// <param name="ipAddress"></param>
 		/// <param name="issuedJWT"></param>
 		/// <returns>[RefreshToken] Returns a new refreshToken</returns>
-		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshToken oldRefreshToken, string ipAddress, string issuedJWT)
+		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshTokenRevokationSettings revokeSettings, string issuedJWT)
 		{
-			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(ipAddress, issuedJWT);
-			RefreshTokenRevokationSettings revokeSettings = new(oldRefreshToken, ipAddress, null, false);
+			RefreshToken newToken = _jwtUtils.GenerateRefreshToken(revokeSettings.IpAddress, issuedJWT);
 
 			await RevokeRefreshToken(user, revokeSettings, "Replaced by new token!", newToken.Token);
 			return newToken;
