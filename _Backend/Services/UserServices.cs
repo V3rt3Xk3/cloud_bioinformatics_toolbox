@@ -181,8 +181,7 @@ namespace Backend.Services
 		/// This method rotates a refresh token. Practically issues a new refreshToken and a new JWT AccessToken
 		/// </summary>
 		/// <param name="user"></param>
-		/// <param name="oldRefreshToken"></param>
-		/// <param name="ipAddress"></param>
+		/// <param name="revokeSettings"></param>
 		/// <param name="issuedJWT"></param>
 		/// <returns>[RefreshToken] Returns a new refreshToken</returns>
 		private async Task<RefreshToken> RotateRefreshToken(UserEntity user, RefreshTokenRevokationSettings revokeSettings, string issuedJWT)
