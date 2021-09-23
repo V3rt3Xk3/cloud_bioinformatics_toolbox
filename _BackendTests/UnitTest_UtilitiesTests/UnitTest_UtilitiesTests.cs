@@ -8,7 +8,7 @@ using Xunit.Extensions.Ordering;
 namespace BackendTests.UnitTestUtilitiesTests
 {
 	[Collection("UnitTestUtilitiesTests")]
-	public class UnitTestUtilitiesTests
+	public class CustomAsserts_UnitTests
 	{
 
 
