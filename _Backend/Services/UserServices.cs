@@ -46,7 +46,7 @@ namespace Backend.Services
 		public async Task Register(RegisterRequest model)
 		{
 			// Validate
-			if (await this.DoesUserExistsByUsername(model.Username)) throw new AppException($"Username '{model.Username}' is already taken!");
+			if (await this.DoesUserExistsByUsername(model.Email)) throw new AppException($"Username '{model.Email}' is already taken!");
 
 			// RegisterRequest mapped to UserEntity
 			UserEntity user = _mapper.Map<UserEntity>(model);
@@ -64,7 +64,7 @@ namespace Backend.Services
 		public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
 		{
 			IAsyncCursor<UserEntity> userCursor = await _userEntity.FindAsync<UserEntity>(
-																		user => user.Username == model.Username);
+																		user => user.Email == model.Email);
 			UserEntity user = await userCursor.FirstOrDefaultAsync<UserEntity>();
 
 			// Validate
@@ -156,11 +156,11 @@ namespace Backend.Services
 		/// This function returns True if user exists and False if not.
 		/// <para>Queries the username against the DB.</para>
 		/// </summary>
-		/// <param name="username">String -> Queryable userName against the DB.</param>
+		/// <param name="email">String -> Queryable userName against the DB.</param>
 		/// <returns>True if exists | False if not</returns>
-		private async Task<bool> DoesUserExistsByUsername(string username)
+		private async Task<bool> DoesUserExistsByUsername(string email)
 		{
-			IFindFluent<UserEntity, UserEntity> requestResults = _userEntity.Find<UserEntity>((_user) => _user.Username == username).Limit(1);
+			IFindFluent<UserEntity, UserEntity> requestResults = _userEntity.Find<UserEntity>((_user) => _user.Email == email).Limit(1);
 			return (await requestResults.FirstOrDefaultAsync<UserEntity>()) != null;
 		}
 		/// <summary>

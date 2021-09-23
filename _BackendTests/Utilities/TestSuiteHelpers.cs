@@ -15,13 +15,13 @@ namespace BackendTests.Utilities
 	{
 		public static readonly RegisterRequest registerRequest = new()
 		{
-			Username = "vertex",
+			Email = "vertex@vertex.hu",
 			Password = "#33FalleN666#",
 			RePassword = "33FalleN666"
 		};
 		public static readonly AuthenticateRequest authenticateRequest = new()
 		{
-			Username = "vertex",
+			Email = "vertex@vertex.hu",
 			Password = "#33FalleN666#"
 		};
 

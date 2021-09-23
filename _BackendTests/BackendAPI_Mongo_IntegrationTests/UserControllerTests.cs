@@ -114,7 +114,7 @@ namespace BackendTests.MongoIntegrationTests
 
 			// Assert
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
-												(_user) => _user.Username == TestSuiteHelpers.registerRequest.Username);
+												(_user) => _user.Email == TestSuiteHelpers.registerRequest.Email);
 			UserEntity user = await requestResults.FirstOrDefaultAsync<UserEntity>();
 
 			errorMessage = $"There are more than 2 refreshTokens in the DB: {user.RefreshTokens.Count}";
@@ -417,7 +417,7 @@ namespace BackendTests.MongoIntegrationTests
 		private async Task<UserEntity> UpdateUserData()
 		{
 			IAsyncCursor<UserEntity> requestResults = await _userEntity.FindAsync<UserEntity>(
-															(_user) => _user.Username == TestSuiteHelpers.registerRequest.Username);
+															(_user) => _user.Email == TestSuiteHelpers.registerRequest.Email);
 			UserEntity user = await requestResults.FirstOrDefaultAsync<UserEntity>();
 
 			return user;

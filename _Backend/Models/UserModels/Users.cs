@@ -13,8 +13,7 @@ namespace Backend.Models
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("userName")]
-		[JsonProperty("userName")]
+		public string Email { get; set; }
 		public string Username { get; set; }
 
 

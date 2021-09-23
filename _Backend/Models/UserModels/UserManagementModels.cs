@@ -6,7 +6,7 @@ namespace Backend.Models.UserManagement
 	public class AuthenticateRequest
 	{
 		[Required]
-		public string Username { get; set; }
+		public string Email { get; set; }
 
 		[Required]
 		public string Password { get; set; }
@@ -15,6 +15,7 @@ namespace Backend.Models.UserManagement
 	public class AuthenticateResponse
 	{
 		public string Id { get; set; }
+		public string Email { get; set; }
 		public string Username { get; set; }
 		public string AccessToken { get; set; }
 		[JsonIgnore]
@@ -23,6 +24,7 @@ namespace Backend.Models.UserManagement
 		public AuthenticateResponse(UserEntity _user, string accessToken, string refreshToken)
 		{
 			this.Id = _user.Id;
+			this.Email = _user.Email;
 			this.Username = _user.Username;
 			this.AccessToken = accessToken;
 			this.RefreshToken = refreshToken;
@@ -32,8 +34,7 @@ namespace Backend.Models.UserManagement
 	public class RegisterRequest
 	{
 		[Required]
-		public string Username { get; set; }
-
+		public string Email { get; set; }
 		[Required]
 		public string Password { get; set; }
 
