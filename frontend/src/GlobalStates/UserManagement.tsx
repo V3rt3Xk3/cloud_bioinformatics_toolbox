@@ -1,14 +1,21 @@
 import { observer } from "mobx-react";
-import { makeAutoObservable } from "mobx";
+import { autorun, makeAutoObservable, observable } from "mobx";
 
 class UserInformation {
-	private username: string | null = null;
+	public username: string | null = null;
 	public getUsername = () => {
 		return this.username;
 	};
 
 
 	constructor() {
-		makeAutoObservable(this);
+		makeAutoObservable(this {
+			username: observable
+		});
+	}
+
+	public UpdateUserInformation(_jsonData: any) {
+
+
 	}
 }
