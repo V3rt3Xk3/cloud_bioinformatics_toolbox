@@ -5,8 +5,6 @@
 
 ## TODO
 
-* Fix the De Morgen problem at removing old refreshTokens //BUG: This is a data trash problem. - Remove old refreshTokens
-* Implement a JWT token white and black list. //VULN: Thre refreshToken sniffing attack could be mitigated this way, not solved, but mitigated.
 * Implement Google Oauth2
   * Make user able to register and login with GMail!
 * Use bcrypt for hashing, both passwords and both accessTokens. //VULN: This could be a vulnerability. Waiting for implementation. - Mark if Done

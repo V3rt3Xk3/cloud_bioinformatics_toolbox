@@ -2,9 +2,7 @@
 
 @tableofcontents
 
-# Cloud_Bioinformatics_Toolbox Backend Vulnerabilities
-
-## BackEnd API Known vulnerabilities and Possible Counter Measures
+# BackEnd API Known vulnerabilities and Possible Counter Measures
 
 ### refreshToken Theft - In progress
 
