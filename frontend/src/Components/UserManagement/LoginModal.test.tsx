@@ -14,33 +14,33 @@ describe("LoginModal Unit tests", () => {
 		expect(loginHeader.textContent).toBe("Login");
 	});
 
-	test("Username input has placeholder 'Username'", () => {
+	test("Email input has placeholder 'Email'", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("loginModal.usernameInput");
+		const emailInputElement = component.getByTestId("loginModal.emailInput");
 
-		expect(usernameInputElement.getAttribute("placeholder")).toBe("Username");
+		expect(emailInputElement.getAttribute("placeholder")).toBe("Email");
 	});
 
-	test("Username input has initial value ''", () => {
+	test("Email input has initial value ''", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("loginModal.usernameInput");
+		const emailInputElement = component.getByTestId("loginModal.emailInput");
 
-		expect(usernameInputElement.getAttribute("value")).toBe("");
+		expect(emailInputElement.getAttribute("value")).toBe("");
 	});
 
-	test("Username input element can change its value!", () => {
+	test("Email input element can change its value!", () => {
 		const component = render(<LoginModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("loginModal.usernameInput");
+		const emailInputElement = component.getByTestId("loginModal.emailInput");
 
-		expect(usernameInputElement.getAttribute("value")).toBe("");
+		expect(emailInputElement.getAttribute("value")).toBe("");
 
-		fireEvent.change(usernameInputElement, {
+		fireEvent.change(emailInputElement, {
 			target: {
-				value: "TestUsername"
+				value: "vertex@vertex.hu"
 			}
 		});
 
-		expect(usernameInputElement.getAttribute("value")).toBe("TestUsername");
+		expect(emailInputElement.getAttribute("value")).toBe("vertex@vertex.hu");
 	});
 
 

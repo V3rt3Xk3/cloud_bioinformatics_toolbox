@@ -11,7 +11,7 @@ interface ILoginModalProperties {
 
 interface ILoginModalState {
 	isLoading: boolean;
-	username: string;
+	email: string;
 	password: string;
 }
 
@@ -21,7 +21,7 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 		super(props);
 		this.state = {
 			isLoading: true,
-			username: "",
+			email: "",
 			password: ""
 		};
 	}
@@ -51,10 +51,13 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 			method: "POST",
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				Username: this.state.username,
+				Email: this.state.email,
 				Password: this.state.password
 			})
 		};
+
+		this.onClose();
+
 		fetch("https://localhost:5001/api/users/authenticate", requestOptions)
 			.then((_response) => _response.json())
 			.then((_data) => {
@@ -79,8 +82,8 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 				<div className="modal-body">
 					<h4 data-testid="loginModal.header">Login</h4>
 					<form>
-						<input type="text" name="username" className="username form-control" placeholder="Username" value={this.state.username} onChange={this.handleChange} data-testid="loginModal.usernameInput" />
-						<input type="password" name="password" className="password form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="loginModal.passwordInput" />
+						<input type="text" name="email" className="form-control" placeholder="Email" value={this.state.email} onChange={this.handleChange} data-testid="loginModal.emailInput" />
+						<input type="password" name="password" className="form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="loginModal.passwordInput" />
 						<div>
 							<button id="login-form-close-trigger" name="submit" type="submit" onClick={(_event) => { this.formSubmit(_event); }} data-testid="loginModal.submit">Login</button>
 						</div>

@@ -25,8 +25,8 @@ class NewVisitorTests(unittest.TestCase):
         registerLink.click()
         time.sleep(1)
 
-        usernameInput = self.browser.find_element_by_name("username")
-        usernameInput.send_keys("FunctionalTester")
+        usernameInput = self.browser.find_element_by_name("email")
+        usernameInput.send_keys("vertex@vertex.hu")
         time.sleep(1)
 
         passwordInput = self.browser.find_element_by_name("password")
@@ -55,8 +55,8 @@ class NewVisitorTests(unittest.TestCase):
         signInLink.click()
         time.sleep(1)
 
-        usernameInput = self.browser.find_element_by_name("username")
-        usernameInput.send_keys("FunctionalTester")
+        usernameInput = self.browser.find_element_by_name("email")
+        usernameInput.send_keys("vertex@vertex.hu")
         time.sleep(1)
 
         passwordInput = self.browser.find_element_by_name("password")

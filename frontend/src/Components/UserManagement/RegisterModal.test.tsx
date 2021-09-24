@@ -6,41 +6,41 @@ import { fireEvent, render } from "@testing-library/react";
 const emptyFunction = () => { };
 
 // Actual tests
-describe("LoginModal Unit tests", () => {
+describe("RegisterModal Unit tests", () => {
 	test("Header renders correctly with correct content", () => {
 		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
-		const loginHeader = component.getByTestId("registerModal.header");
+		const registerHeader = component.getByTestId("registerModal.header");
 
-		expect(loginHeader.textContent).toBe("Login");
+		expect(registerHeader.textContent).toBe("Login");
 	});
 
-	test("Username input has placeholder 'Username'", () => {
+	test("Email input has placeholder 'Email'", () => {
 		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("registerModal.usernameInput");
+		const emailInputElement = component.getByTestId("registerModal.emailInput");
 
-		expect(usernameInputElement.getAttribute("placeholder")).toBe("Username");
+		expect(emailInputElement.getAttribute("placeholder")).toBe("Email");
 	});
 
-	test("Username input has initial value ''", () => {
+	test("Email input has initial value ''", () => {
 		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("registerModal.usernameInput");
+		const emailInputElement = component.getByTestId("registerModal.emailInput");
 
-		expect(usernameInputElement.getAttribute("value")).toBe("");
+		expect(emailInputElement.getAttribute("value")).toBe("");
 	});
 
-	test("Username input element can change its value!", () => {
+	test("Email input element can change its value!", () => {
 		const component = render(<RegisterModal show={true} onClose={emptyFunction} />);
-		const usernameInputElement = component.getByTestId("registerModal.usernameInput");
+		const emailInputElement = component.getByTestId("registerModal.emailInput");
 
-		expect(usernameInputElement.getAttribute("value")).toBe("");
+		expect(emailInputElement.getAttribute("value")).toBe("");
 
-		fireEvent.change(usernameInputElement, {
+		fireEvent.change(emailInputElement, {
 			target: {
-				value: "TestUsername"
+				value: "vertex@vertex.hu"
 			}
 		});
 
-		expect(usernameInputElement.getAttribute("value")).toBe("TestUsername");
+		expect(emailInputElement.getAttribute("value")).toBe("vertex@vertex.hu");
 	});
 
 

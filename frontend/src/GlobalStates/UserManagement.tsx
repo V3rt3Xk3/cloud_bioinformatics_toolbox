@@ -9,7 +9,7 @@ class UserInformation {
 
 
 	constructor() {
-		makeAutoObservable(this {
+		makeAutoObservable(this, {
 			username: observable
 		});
 	}

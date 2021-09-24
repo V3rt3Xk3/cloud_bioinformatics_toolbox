@@ -11,7 +11,7 @@ interface IRegisterModalProperties {
 
 interface IRegisterModalState {
 	isLoading: boolean;
-	username: string;
+	email: string;
 	password: string;
 	rePassword: string;
 }
@@ -22,7 +22,7 @@ export default class RegisterModal extends React.Component<IRegisterModalPropert
 		super(props);
 		this.state = {
 			isLoading: true,
-			username: "",
+			email: "",
 			password: "",
 			rePassword: ""
 		};
@@ -53,11 +53,14 @@ export default class RegisterModal extends React.Component<IRegisterModalPropert
 			method: "POST",
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				Username: this.state.username,
+				Email: this.state.email,
 				Password: this.state.password,
 				RePassword: this.state.rePassword
 			})
 		};
+
+		this.onClose();
+
 		fetch("https://localhost:5001/api/users/register", requestOptions)
 			.then((_response) => _response.json())
 			.then((_data) => {
@@ -81,9 +84,9 @@ export default class RegisterModal extends React.Component<IRegisterModalPropert
 				<div className="modal-body">
 					<h4 data-testid="registerModal.header">Login</h4>
 					<form onSubmit={this.formSubmit} data-testid="registerModal.form">
-						<input type="text" name="username" className="username form-control" placeholder="Username" value={this.state.username} onChange={this.handleChange} data-testid="registerModal.usernameInput" />
-						<input type="password" name="password" className="password form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="registerModal.passwordInput" />
-						<input type="password" name="rePassword" className="rePassword form-control" placeholder="Repeat password" value={this.state.rePassword} onChange={this.handleChange} data-testid="registerModal.rePasswordInput" />
+						<input type="text" name="email" className="form-control" placeholder="Email" value={this.state.email} onChange={this.handleChange} data-testid="registerModal.emailInput" />
+						<input type="password" name="password" className="form-control" placeholder="Password" value={this.state.password} onChange={this.handleChange} data-testid="registerModal.passwordInput" />
+						<input type="password" name="rePassword" className="form-control" placeholder="Repeat password" value={this.state.rePassword} onChange={this.handleChange} data-testid="registerModal.rePasswordInput" />
 						<div>
 							<button id="register-form-close-trigger" name="submit" type="submit" data-testid="registerModal.submit">Register</button>
 						</div>
