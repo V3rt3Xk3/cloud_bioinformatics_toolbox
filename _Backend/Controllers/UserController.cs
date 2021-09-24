@@ -86,6 +86,7 @@ namespace Backend.Controllers
 			{
 				HttpOnly = true,
 				Secure = true,
+				SameSite = SameSiteMode.None,
 				Expires = System.DateTime.UtcNow.AddDays(7)
 			};
 			Response.Cookies.Append("refreshToken", token, _cookieOptions);

@@ -20,6 +20,11 @@ class NewVisitorTests(unittest.TestCase):
         self.browser = webdriver.Firefox()
 
     def test_TC0001_user_can_register(self):
+        """
+        This TC pretty much only tests the functionality of the LoginModal
+        At this point, i am unsure how to tap into the network traffic with
+        selenium.
+        """
 
         # User navigates to EC
         self.browser.get("http://localhost:3000/")
@@ -76,12 +81,6 @@ class NewVisitorTests(unittest.TestCase):
         submitButton.click()
         time.sleep(1)
 
-        usernameField = self.browser.find_element_by_id("usernameField")
-        self.assertEqual(usernameField.get_attribute('innerHTML'),
-                         "vertex@vertex.hu", "The user ID field does not match.")
-
-        # Users wants to retain access to the site even after a refresh.
-        self.browser.refresh()
         usernameField = self.browser.find_element_by_id("usernameField")
         self.assertEqual(usernameField.get_attribute('innerHTML'),
                          "vertex@vertex.hu", "The user ID field does not match.")

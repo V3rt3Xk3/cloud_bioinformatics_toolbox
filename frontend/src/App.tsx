@@ -21,7 +21,7 @@ import LoginModal from "./Components/UserManagement/LoginModal";
 import RegisterModal from './Components/UserManagement/RegisterModal';
 import { stringify } from 'querystring';
 import { observer } from 'mobx-react';
-import { UserManagement } from "src/GlobalStates/UserManagement";
+import { UserManagement, userInformation } from "src/GlobalStates/UserManagement";
 
 interface IAppProperties {
 	userInfo: UserManagement;
@@ -62,6 +62,15 @@ class App extends React.Component<IAppProperties, IAppState> {
 
 	componentDidMount() {
 		this.setState({ loading: false });
+
+		if (getAccessTokenJWT() == "") {
+			fetch("https://localhost:5001/api/users/refresh-token", { method: "POST", credentials: "include" })
+				.then((_response) => _response.json())
+				.then((_data) => {
+					setAccessTokenJWT(_data.AccessToken);
+					userInformation.UpdateUserInformation(_data);
+				});
+		}
 	}
 
 	render() {

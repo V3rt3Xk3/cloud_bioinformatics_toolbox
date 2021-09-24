@@ -50,17 +50,20 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 		// NOTE: the next line prevent page refresh.
 		_event.preventDefault();
 		const requestOptions = {
-			method: "POST",
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				Email: this.state.email,
-				Password: this.state.password
-			})
+
 		};
 
 		this.onClose();
 
-		fetch("https://localhost:5001/api/users/authenticate", requestOptions)
+		fetch("https://localhost:5001/api/users/authenticate", {
+			method: "POST",
+			headers: { 'Content-Type': 'application/json' },
+			credentials: "same-origin",
+			body: JSON.stringify({
+				Email: this.state.email,
+				Password: this.state.password
+			})
+		})
 			.then((_response) => _response.json())
 			.then((_data) => {
 				setAccessTokenJWT(_data.AccessToken);
