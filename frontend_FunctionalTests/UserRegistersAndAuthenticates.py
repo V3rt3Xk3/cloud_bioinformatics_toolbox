@@ -3,11 +3,20 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 
+from pymongo import MongoClient
+import pymongo
+
 
 class NewVisitorTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        # Dropping the Users data.
+        connectionString = "mongodb://cloud_bioinformaitcs_mongo_dev:%2333FalleN666%23@localhost:27017/?authSource=cloud_bioinformatics"
+        mongoClient = MongoClient(connectionString)
+        usersCollection = mongoClient["cloud_bioinformatics"]["Users"]
+        usersCollection.drop()
+
         self.browser = webdriver.Firefox()
 
     def test_TC0001_user_can_register(self):
@@ -67,8 +76,14 @@ class NewVisitorTests(unittest.TestCase):
         submitButton.click()
         time.sleep(1)
 
-        emailField = self.browser.find_element_by_id("usernameField")
-        self.assertEqual(emailField.get_attribute('innerHTML'),
+        usernameField = self.browser.find_element_by_id("usernameField")
+        self.assertEqual(usernameField.get_attribute('innerHTML'),
+                         "vertex@vertex.hu", "The user ID field does not match.")
+
+        # Users wants to retain access to the site even after a refresh.
+        self.browser.refresh()
+        usernameField = self.browser.find_element_by_id("usernameField")
+        self.assertEqual(usernameField.get_attribute('innerHTML'),
                          "vertex@vertex.hu", "The user ID field does not match.")
 
     @classmethod
