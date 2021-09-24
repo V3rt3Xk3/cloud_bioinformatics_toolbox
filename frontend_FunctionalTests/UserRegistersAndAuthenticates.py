@@ -65,6 +65,7 @@ class NewVisitorTests(unittest.TestCase):
 
         submitButton = self.browser.find_element_by_name("submit")
         submitButton.click()
+        time.sleep(1)
 
         emailField = self.browser.find_element_by_id("usernameField")
         self.assertEqual(emailField.get_attribute('innerHTML'),

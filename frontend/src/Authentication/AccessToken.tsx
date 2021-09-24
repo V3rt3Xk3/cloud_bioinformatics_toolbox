@@ -1,4 +1,4 @@
-let accessTokenJWT: string;
+let accessTokenJWT: string = "";
 
 export const setAccessTokenJWT = (value: string) => {
 	accessTokenJWT = value;

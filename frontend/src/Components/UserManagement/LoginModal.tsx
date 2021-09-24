@@ -1,6 +1,8 @@
 import React from "react";
 import { Route } from "react-router";
 import { setAccessTokenJWT } from "src/Authentication/AccessToken";
+import { userInformation } from "src/GlobalStates/UserManagement";
+import UserInfromation from "src/Models/UserInformationResponse";
 
 import "./LoginModal.scss";
 
@@ -62,6 +64,7 @@ export default class LoginModal extends React.Component<ILoginModalProperties, I
 			.then((_response) => _response.json())
 			.then((_data) => {
 				setAccessTokenJWT(_data.AccessToken);
+				userInformation.UpdateUserInformation(_data);
 			});
 
 	};

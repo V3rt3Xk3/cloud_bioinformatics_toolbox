@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { autorun, makeAutoObservable, observable } from "mobx";
 
-class UserInformation {
+export class UserManagement {
 	public username: string | null = null;
 	public getUsername = () => {
 		return this.username;
@@ -14,8 +14,10 @@ class UserInformation {
 		});
 	}
 
-	public UpdateUserInformation(_jsonData: any) {
-
-
+	public UpdateUserInformation(_jsonResponse: any) {
+		if (_jsonResponse["Username"] != null) this.username = _jsonResponse["Username"];
+		else this.username = _jsonResponse["Email"];
 	}
 }
+
+export const userInformation = new UserManagement();

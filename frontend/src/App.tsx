@@ -6,6 +6,7 @@ import {
 	Link
 } from "react-router-dom";
 
+import { setAccessTokenJWT, getAccessTokenJWT } from "src/Authentication/AccessToken";
 import Home from "./Pages/Home";
 import UserProfile from "./Pages/UserProfile";
 import Sequences from "./Pages/Sequences";
@@ -19,9 +20,11 @@ import "./SharedStyle/AppLoading.scss";
 import LoginModal from "./Components/UserManagement/LoginModal";
 import RegisterModal from './Components/UserManagement/RegisterModal';
 import { stringify } from 'querystring';
+import { observer } from 'mobx-react';
+import { UserManagement } from "src/GlobalStates/UserManagement";
 
 interface IAppProperties {
-
+	userInfo: UserManagement;
 }
 
 interface IAppState {
@@ -31,6 +34,7 @@ interface IAppState {
 	showRegisterModal: boolean;
 }
 
+@observer
 class App extends React.Component<IAppProperties, IAppState> {
 
 	constructor(properties: any) {
@@ -86,8 +90,8 @@ class App extends React.Component<IAppProperties, IAppState> {
 					<nav className="navbar">
 						<div className="navbar-menu">
 							<ul className="navbar-userinfo">
-								<li data-testid="navBar.username">
-									{this.state.user}
+								<li id="usernameField" data-testid="navBar.username">
+									{this.props.userInfo.username}
 								</li>
 							</ul>
 							<ul className="navbar-nav">

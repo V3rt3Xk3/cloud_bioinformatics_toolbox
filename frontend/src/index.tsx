@@ -3,10 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { userInformation } from './GlobalStates/UserManagement';
+import { observable } from 'mobx';
+import UserProfile from './Pages/UserProfile';
+
+const userInfo = userInformation;
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App userInfo={userInfo} />
   </React.StrictMode>,
   document.getElementById('root')
 );
