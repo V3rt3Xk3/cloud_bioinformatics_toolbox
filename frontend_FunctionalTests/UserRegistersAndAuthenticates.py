@@ -66,6 +66,10 @@ class NewVisitorTests(unittest.TestCase):
         submitButton = self.browser.find_element_by_name("submit")
         submitButton.click()
 
+        emailField = self.browser.find_element_by_id("usernameField")
+        self.assertEqual(emailField.get_attribute('innerHTML'),
+                         "vertex@vertex.hu", "The user ID field does not match.")
+
     @classmethod
     def tearDownClass(self):
         self.browser.quit()
