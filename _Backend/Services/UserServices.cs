@@ -308,7 +308,15 @@ namespace Backend.Services
 				BlackListMatches = user.BlackListedJWTs.Where((_token) => _token.CorrespondingRefreshToken == refreshToken.Token);
 				if (!BlackListMatches.Any())
 				{
-					newBlackListedJWT = new(refreshToken.IssuedJWTTokenId, revokeSettings.FirstAncestor, refreshToken.Created, ipAddress, refreshToken.Token);
+					newBlackListedJWT = new()
+					{
+						TokenID = refreshToken.IssuedJWTTokenId,
+						FirstAncestor = revokeSettings.FirstAncestor,
+						AttemptsToReuse = 0,
+						IssueDateTime = refreshToken.Created,
+						BlackListedByIp = revokeSettings.IpAddress,
+						CorrespondingRefreshToken = refreshToken.Token
+					};
 				}
 				else
 				{
@@ -319,7 +327,15 @@ namespace Backend.Services
 			}
 			else
 			{
-				newBlackListedJWT = new(refreshToken.IssuedJWTTokenId, revokeSettings.FirstAncestor, refreshToken.Created, ipAddress, refreshToken.Token);
+				newBlackListedJWT = new()
+				{
+					TokenID = refreshToken.IssuedJWTTokenId,
+					FirstAncestor = revokeSettings.FirstAncestor,
+					AttemptsToReuse = 0,
+					IssueDateTime = refreshToken.Created,
+					BlackListedByIp = revokeSettings.IpAddress,
+					CorrespondingRefreshToken = refreshToken.Token
+				};
 			}
 
 			if (isItPush)

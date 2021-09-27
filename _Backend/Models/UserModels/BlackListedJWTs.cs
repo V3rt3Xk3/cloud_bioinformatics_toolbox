@@ -11,6 +11,8 @@ namespace Backend.Models.Authentication
 		public string BlackListedByIp { get; set; }
 		public string CorrespondingRefreshToken { get; set; }
 
+		public BlackListedJWT() {}
+
 		public BlackListedJWT(	string tokenID, 
 								string firstAncestor, 
 								DateTime issueDateTime, 
